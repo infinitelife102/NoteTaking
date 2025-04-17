@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'package:flutter/material.dart';
 import 'note_form_page.dart';
 import 'note_tile.dart';
@@ -9,7 +10,7 @@ import 'theme.dart';
 class NoteListPage extends StatefulWidget {
   final NoteService noteService;
 
-  const NoteListPage({super.key, required this.noteService});
+  const NoteListPage({Key? key, required this.noteService}) : super(key: key);
 
   @override
   State<NoteListPage> createState() => _NoteListPageState();
@@ -51,23 +52,24 @@ class _NoteListPageState extends State<NoteListPage> {
     final cats =
         _allNotes.map((n) => n.category).toSet().toList()
           ..remove('trashed')
+          ..remove('All')
           ..sort();
     return cats;
   }
 
   List<PopupMenuEntry<String>> _buildCategoryItems() {
-    final cats = ['All', ..._getAllCategories()];
-    return cats
-        .map(
-          (cat) => PopupMenuItem<String>(
-            value: cat,
-            child: Text(
-              cat,
-              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
-            ),
-          ),
-        )
-        .toList();
+    var cats = ['All', ..._getAllCategories()];
+    cats = LinkedHashSet<String>.from(cats).toList();
+
+    return cats.map((cat) {
+      return PopupMenuItem<String>(
+        value: cat,
+        child: Text(
+          cat,
+          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+        ),
+      );
+    }).toList();
   }
 
   @override
@@ -135,7 +137,6 @@ class _NoteListPageState extends State<NoteListPage> {
                 filled: true,
                 fillColor: AppColors.grey900.withOpacity(0.05),
                 contentPadding: const EdgeInsets.symmetric(vertical: 0),
-
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide(color: AppColors.grey850),
@@ -152,7 +153,6 @@ class _NoteListPageState extends State<NoteListPage> {
               style: const TextStyle(color: AppColors.black),
             ),
           ),
-
           Expanded(
             child:
                 filteredNotes.isEmpty
@@ -273,7 +273,10 @@ class _NoteListPageState extends State<NoteListPage> {
                                             existingCategories:
                                                 _getAllCategories(),
                                             initialNote: note,
-                                            initialCategory: note.category,
+                                            initialCategory:
+                                                note.category != 'All'
+                                                    ? note.category
+                                                    : null,
                                           ),
                                     ),
                                   );
@@ -299,7 +302,8 @@ class _NoteListPageState extends State<NoteListPage> {
               builder:
                   (_) => NoteFormPage(
                     existingCategories: _getAllCategories(),
-                    initialCategory: _selectedCategory,
+                    initialCategory:
+                        _selectedCategory != 'All' ? _selectedCategory : null,
                   ),
             ),
           );
