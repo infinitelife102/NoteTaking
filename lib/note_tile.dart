@@ -15,7 +15,7 @@ class NoteTile extends StatelessWidget {
     final hasMedia = note.mediaData.isNotEmpty;
 
     return Card(
-      color: hasMedia ? Colors.transparent : AppColors.grey850,
+      color: hasMedia ? Colors.transparent : AppColors.grey,
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       elevation: 1.5,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -34,7 +34,7 @@ class NoteTile extends StatelessWidget {
                     ),
                   ),
                   Positioned.fill(
-                    child: Container(color: AppColors.grey850.withOpacity(0.6)),
+                    child: Container(color: AppColors.grey.withOpacity(0.6)),
                   ),
                   _buildListTile(dateStr),
                 ],

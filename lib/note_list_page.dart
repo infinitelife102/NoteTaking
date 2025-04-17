@@ -160,19 +160,19 @@ class _NoteListPageState extends State<NoteListPage> {
                 hintText: 'Search notes...',
                 prefixIcon: const Icon(Icons.search, color: AppColors.black),
                 filled: true,
-                fillColor: AppColors.grey900.withOpacity(0.05),
+                fillColor: AppColors.grey.withOpacity(0.05),
                 contentPadding: const EdgeInsets.symmetric(vertical: 0),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: AppColors.grey850),
+                  borderSide: BorderSide(color: AppColors.grey),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: AppColors.grey850),
+                  borderSide: BorderSide(color: AppColors.grey),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: AppColors.grey850, width: 2),
+                  borderSide: BorderSide(color: AppColors.grey, width: 2),
                 ),
               ),
               style: const TextStyle(color: AppColors.black),
@@ -247,7 +247,7 @@ class _NoteListPageState extends State<NoteListPage> {
                                         onPressed:
                                             () => Navigator.pop(ctx, true),
                                         style: ElevatedButton.styleFrom(
-                                          backgroundColor: AppColors.redAccent,
+                                          backgroundColor: AppColors.red,
                                           foregroundColor: AppColors.white,
                                           shape: RoundedRectangleBorder(
                                             borderRadius: BorderRadius.circular(
@@ -277,7 +277,7 @@ class _NoteListPageState extends State<NoteListPage> {
                                     ),
                                   ],
                                 ),
-                                backgroundColor: AppColors.grey900,
+                                backgroundColor: AppColors.grey,
                                 behavior: SnackBarBehavior.floating,
                                 margin: const EdgeInsets.symmetric(
                                   horizontal: 20,
@@ -321,7 +321,7 @@ class _NoteListPageState extends State<NoteListPage> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: AppColors.grey850,
+        backgroundColor: AppColors.grey,
         foregroundColor: AppColors.white,
         onPressed: () async {
           final newNote = await Navigator.push<NoteItem>(

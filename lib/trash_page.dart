@@ -51,7 +51,7 @@ class TrashPage extends StatelessWidget {
                       child: const Icon(Icons.restore, color: AppColors.white),
                     ),
                     secondaryBackground: Container(
-                      color: AppColors.redAccent,
+                      color: AppColors.red,
                       alignment: Alignment.centerRight,
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: const Icon(
@@ -71,7 +71,7 @@ class TrashPage extends StatelessWidget {
                                 Expanded(child: Text("Note restored")),
                               ],
                             ),
-                            backgroundColor: AppColors.green800,
+                            backgroundColor: AppColors.green,
                             behavior: SnackBarBehavior.floating,
                             margin: const EdgeInsets.symmetric(
                               horizontal: 20,
@@ -120,7 +120,7 @@ class TrashPage extends StatelessWidget {
                                   ElevatedButton(
                                     onPressed: () => Navigator.pop(ctx, true),
                                     style: ElevatedButton.styleFrom(
-                                      backgroundColor: AppColors.redAccent,
+                                      backgroundColor: AppColors.red,
                                       foregroundColor: AppColors.white,
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(10),
@@ -147,7 +147,7 @@ class TrashPage extends StatelessWidget {
                                   ),
                                 ],
                               ),
-                              backgroundColor: AppColors.redAccent,
+                              backgroundColor: AppColors.red,
                               behavior: SnackBarBehavior.floating,
                               margin: const EdgeInsets.symmetric(
                                 horizontal: 20,

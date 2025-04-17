@@ -111,15 +111,15 @@ class _NoteFormPageState extends State<NoteFormPage> {
               hintText: "Enter category name",
               hintStyle: TextStyle(color: AppColors.black.withOpacity(0.4)),
               enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: AppColors.grey850),
+                borderSide: BorderSide(color: AppColors.grey),
                 borderRadius: BorderRadius.circular(12),
               ),
               focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: AppColors.grey850, width: 2),
+                borderSide: BorderSide(color: AppColors.grey, width: 2),
                 borderRadius: BorderRadius.circular(12),
               ),
               filled: true,
-              fillColor: AppColors.grey900.withOpacity(0.05),
+              fillColor: AppColors.grey.withOpacity(0.05),
             ),
           ),
           actionsPadding: const EdgeInsets.symmetric(
@@ -137,7 +137,7 @@ class _NoteFormPageState extends State<NoteFormPage> {
             ElevatedButton(
               onPressed: () => Navigator.pop(ctx, controller.text.trim()),
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.grey850,
+                backgroundColor: AppColors.grey,
                 foregroundColor: AppColors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
@@ -287,7 +287,7 @@ class _NoteFormPageState extends State<NoteFormPage> {
                                   ListTile(
                                     leading: Icon(
                                       Icons.photo_camera,
-                                      color: AppColors.grey850,
+                                      color: AppColors.grey,
                                     ),
                                     title: const Text(
                                       "Take Photo",
@@ -306,7 +306,7 @@ class _NoteFormPageState extends State<NoteFormPage> {
                                   ListTile(
                                     leading: Icon(
                                       Icons.photo_library,
-                                      color: AppColors.grey850,
+                                      color: AppColors.grey,
                                     ),
                                     title: const Text(
                                       "Choose from Gallery",
@@ -436,7 +436,7 @@ class _NoteFormPageState extends State<NoteFormPage> {
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(16),
                             ),
-                            backgroundColor: AppColors.grey850,
+                            backgroundColor: AppColors.grey,
                             foregroundColor: AppColors.white,
                             elevation: 0,
                           ),

@@ -3,34 +3,28 @@ import 'package:flutter/material.dart';
 class AppColors {
   static const Color white = Color(0xFFFBF1C7);
   static const Color black = Color(0xFF1D2021);
-
-  static const Color grey850 = Color(0xFF282828);
-  static const Color grey900 = Color(0xFF1D2021);
-
+  static const Color grey = Color(0xFF282828);
   static const Color red = Color(0xFFCC241D);
-  static const Color redAccent = Color(0xFFFB4934);
-
   static const Color green = Color(0xFF98971A);
-  static const Color green800 = Color(0xFFB8BB26);
 }
 
 class AppTheme {
   static final ThemeData dark = ThemeData(
     brightness: Brightness.dark,
-    scaffoldBackgroundColor: AppColors.grey850,
+    scaffoldBackgroundColor: AppColors.grey,
     primaryColor: AppColors.green,
     colorScheme: const ColorScheme.dark().copyWith(
-      primary: AppColors.green800,
-      secondary: AppColors.redAccent,
-      background: AppColors.grey900,
-      error: AppColors.redAccent,
+      primary: AppColors.green,
+      secondary: AppColors.red,
+      background: AppColors.grey,
+      error: AppColors.red,
       onPrimary: AppColors.black,
       onBackground: AppColors.white,
       onError: AppColors.black,
     ),
 
     appBarTheme: const AppBarTheme(
-      backgroundColor: AppColors.grey900,
+      backgroundColor: AppColors.grey,
       elevation: 0,
       iconTheme: IconThemeData(color: AppColors.white),
       titleTextStyle: TextStyle(
@@ -41,7 +35,7 @@ class AppTheme {
     ),
 
     popupMenuTheme: const PopupMenuThemeData(
-      color: AppColors.grey900,
+      color: AppColors.grey,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.all(Radius.circular(12)),
       ),
@@ -53,13 +47,13 @@ class AppTheme {
     ),
 
     snackBarTheme: const SnackBarThemeData(
-      backgroundColor: AppColors.grey900,
+      backgroundColor: AppColors.grey,
       behavior: SnackBarBehavior.floating,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.all(Radius.circular(12)),
       ),
       contentTextStyle: TextStyle(color: AppColors.white),
-      actionTextColor: AppColors.green800,
+      actionTextColor: AppColors.green,
     ),
 
     floatingActionButtonTheme: const FloatingActionButtonThemeData(
@@ -80,7 +74,7 @@ class AppTheme {
     ),
 
     textSelectionTheme: const TextSelectionThemeData(
-      cursorColor: AppColors.green800,
+      cursorColor: AppColors.green,
     ),
   );
 }
