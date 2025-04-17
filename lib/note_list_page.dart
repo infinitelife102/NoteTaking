@@ -171,9 +171,10 @@ class _NoteListPageState extends State<NoteListPage> {
                         final note = filteredNotes[index];
                         return Dismissible(
                           key: Key(note.id),
-                          direction: DismissDirection.startToEnd,
-                          background: Container(
-                            alignment: Alignment.centerLeft,
+                          direction: DismissDirection.endToStart,
+                          background: Container(),
+                          secondaryBackground: Container(
+                            alignment: Alignment.centerRight,
                             padding: const EdgeInsets.symmetric(horizontal: 20),
                             color: AppColors.red,
                             child: const Icon(
@@ -181,6 +182,9 @@ class _NoteListPageState extends State<NoteListPage> {
                               color: AppColors.white,
                             ),
                           ),
+
+                          movementDuration: const Duration(milliseconds: 250),
+                          resizeDuration: const Duration(milliseconds: 200),
                           confirmDismiss: (_) async {
                             return await showDialog<bool>(
                               context: context,
