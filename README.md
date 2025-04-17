@@ -1,2 +1,2 @@
 # wisdom
-Free and Open-Source Note Taking App built with Flutter
+Simple and Secure Note-Taking App
