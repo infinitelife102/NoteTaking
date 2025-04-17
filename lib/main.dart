@@ -1,14 +1,33 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'models/note_item.dart';
 import 'note_service.dart';
 import 'note_list_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   await Hive.initFlutter();
   Hive.registerAdapter(NoteItemAdapter());
+
+  const secureStorage = FlutterSecureStorage();
+  String? encodedKey = await secureStorage.read(key: 'hive_key');
+
+  if (encodedKey == null) {
+    final newKey = Hive.generateSecureKey();
+    encodedKey = base64UrlEncode(newKey);
+    await secureStorage.write(key: 'hive_key', value: encodedKey);
+  }
+
+  final encryptionKey = base64Url.decode(encodedKey);
+
+  await Hive.openBox<NoteItem>(
+    NoteService.boxName,
+    encryptionCipher: HiveAesCipher(encryptionKey),
+  );
 
   final noteService = NoteService();
   await noteService.init();
