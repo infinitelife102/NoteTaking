@@ -1,5 +1,6 @@
 import 'dart:collection';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'note_form_page.dart';
 import 'note_tile.dart';
 import 'models/note_item.dart';
@@ -17,6 +18,8 @@ class NoteListPage extends StatefulWidget {
 }
 
 class _NoteListPageState extends State<NoteListPage> {
+  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
+
   String _selectedCategory = 'All';
   List<NoteItem> _allNotes = [];
   final TextEditingController _searchController = TextEditingController();
@@ -25,20 +28,37 @@ class _NoteListPageState extends State<NoteListPage> {
   @override
   void initState() {
     super.initState();
-
-    final notes = widget.noteService.getAllNotes();
-    _allNotes = notes.where((n) => n.category != 'trashed').toList();
-
+    _loadSelectedCategory();
+    _loadNotes();
     widget.noteService.notesStream.listen((notes) {
       setState(() {
         _allNotes = notes.where((n) => n.category != 'trashed').toList();
       });
     });
-
     _searchController.addListener(() {
       setState(() {
         _searchQuery = _searchController.text.trim();
       });
+    });
+  }
+
+  Future<void> _loadSelectedCategory() async {
+    final stored = await _secureStorage.read(key: 'selectedCategory');
+    if (mounted) {
+      setState(() {
+        _selectedCategory = stored ?? 'All';
+      });
+    }
+  }
+
+  Future<void> _saveSelectedCategory(String category) async {
+    await _secureStorage.write(key: 'selectedCategory', value: category);
+  }
+
+  void _loadNotes() {
+    final notes = widget.noteService.getAllNotes();
+    setState(() {
+      _allNotes = notes.where((n) => n.category != 'trashed').toList();
     });
   }
 
@@ -109,7 +129,12 @@ class _NoteListPageState extends State<NoteListPage> {
             color: AppColors.white,
             elevation: 8,
             icon: const Icon(Icons.category_outlined, color: AppColors.black),
-            onSelected: (value) => setState(() => _selectedCategory = value),
+            onSelected: (value) {
+              setState(() {
+                _selectedCategory = value;
+              });
+              _saveSelectedCategory(value);
+            },
             itemBuilder: (context) => _buildCategoryItems(),
           ),
           IconButton(
@@ -182,7 +207,6 @@ class _NoteListPageState extends State<NoteListPage> {
                               color: AppColors.white,
                             ),
                           ),
-
                           movementDuration: const Duration(milliseconds: 250),
                           resizeDuration: const Duration(milliseconds: 200),
                           confirmDismiss: (_) async {
@@ -314,6 +338,7 @@ class _NoteListPageState extends State<NoteListPage> {
           if (newNote != null) {
             widget.noteService.addNote(newNote);
             setState(() => _selectedCategory = 'All');
+            _saveSelectedCategory('All');
           }
         },
         child: const Icon(Icons.add),
