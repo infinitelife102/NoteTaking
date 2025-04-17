@@ -1,4 +1,7 @@
+import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:uuid/uuid.dart';
 import 'models/note_item.dart';
 import 'theme.dart';
@@ -9,11 +12,11 @@ class NoteFormPage extends StatefulWidget {
   final String? initialCategory;
 
   const NoteFormPage({
-    super.key,
+    Key? key,
     required this.existingCategories,
     this.initialNote,
     this.initialCategory,
-  });
+  }) : super(key: key);
 
   @override
   State<NoteFormPage> createState() => _NoteFormPageState();
@@ -22,10 +25,13 @@ class NoteFormPage extends StatefulWidget {
 class _NoteFormPageState extends State<NoteFormPage> {
   final TextEditingController _noteController = TextEditingController();
   final FocusNode _focusNode = FocusNode();
+  final ImagePicker _picker = ImagePicker();
+  final List<Uint8List> _mediaData = [];
+  final _uuid = const Uuid();
+
   String _selectedCategory = '';
   bool _autofocus = true;
   bool _showSave = false;
-  final _uuid = const Uuid();
 
   @override
   void initState() {
@@ -34,6 +40,7 @@ class _NoteFormPageState extends State<NoteFormPage> {
     if (note != null) {
       _noteController.text = '${note.title}\n${note.content}';
       _selectedCategory = note.category;
+      _mediaData.addAll(note.mediaData);
       _autofocus = false;
       _showSave = false;
     } else {
@@ -60,6 +67,17 @@ class _NoteFormPageState extends State<NoteFormPage> {
     super.dispose();
   }
 
+  Future<void> _pickImage(ImageSource source) async {
+    final picked = await _picker.pickImage(source: source);
+    if (picked != null) {
+      final bytes = await File(picked.path).readAsBytes();
+      setState(() {
+        _mediaData.add(bytes);
+        _showSave = true;
+      });
+    }
+  }
+
   String _extractTitle(String text) {
     final lines = text.trim().split('\n');
     return (lines.isNotEmpty && lines.first.trim().isNotEmpty)
@@ -67,30 +85,11 @@ class _NoteFormPageState extends State<NoteFormPage> {
         : 'Untitled';
   }
 
-  void _saveNote() {
-    final lines = _noteController.text.trim().split('\n');
-    final title = lines.isNotEmpty ? lines.first.trim() : '';
-    final content = lines.length > 1 ? lines.sublist(1).join('\n').trim() : '';
-
-    final note = NoteItem(
-      id: widget.initialNote?.id ?? _uuid.v4(),
-      title: title,
-      content: content,
-      category: _selectedCategory.trim(),
-      createdAt: widget.initialNote?.createdAt ?? DateTime.now(),
-      customFields: Map<String, String>.from(
-        widget.initialNote?.customFields ?? {},
-      ),
-    );
-
-    Navigator.pop(context, note);
-  }
-
   Future<String?> _promptForCategory() async {
     String? newCategory;
     await showDialog<String>(
       context: context,
-      builder: (BuildContext context) {
+      builder: (ctx) {
         final controller = TextEditingController();
         return AlertDialog(
           backgroundColor: AppColors.white,
@@ -129,14 +128,14 @@ class _NoteFormPageState extends State<NoteFormPage> {
           ),
           actions: [
             TextButton(
-              onPressed: () => Navigator.pop(context),
+              onPressed: () => Navigator.pop(ctx, null),
               style: TextButton.styleFrom(
                 foregroundColor: AppColors.black.withOpacity(0.7),
               ),
               child: const Text("Cancel"),
             ),
             ElevatedButton(
-              onPressed: () => Navigator.pop(context, controller.text.trim()),
+              onPressed: () => Navigator.pop(ctx, controller.text.trim()),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.grey850,
                 foregroundColor: AppColors.white,
@@ -151,6 +150,26 @@ class _NoteFormPageState extends State<NoteFormPage> {
       },
     ).then((value) => newCategory = value);
     return newCategory;
+  }
+
+  void _saveNote() {
+    final lines = _noteController.text.trim().split('\n');
+    final title = lines.isNotEmpty ? lines.first.trim() : '';
+    final content = lines.length > 1 ? lines.sublist(1).join('\n').trim() : '';
+
+    final note = NoteItem(
+      id: widget.initialNote?.id ?? _uuid.v4(),
+      title: title,
+      content: content,
+      category: _selectedCategory.trim(),
+      createdAt: widget.initialNote?.createdAt ?? DateTime.now(),
+      customFields: Map<String, dynamic>.from(
+        widget.initialNote?.customFields ?? {},
+      ),
+      mediaData: _mediaData,
+    );
+
+    Navigator.pop(context, note);
   }
 
   @override
@@ -204,17 +223,16 @@ class _NoteFormPageState extends State<NoteFormPage> {
                   tooltip: "Select Category",
                   onSelected: (value) async {
                     if (value == 'New Category') {
-                      final newCategory = await _promptForCategory();
-                      if (newCategory != null &&
-                          newCategory.trim().isNotEmpty) {
-                        setState(() => _selectedCategory = newCategory.trim());
+                      final newCat = await _promptForCategory();
+                      if (newCat != null && newCat.isNotEmpty) {
+                        setState(() => _selectedCategory = newCat);
                       }
                     } else {
                       setState(() => _selectedCategory = value);
                     }
                   },
                   itemBuilder:
-                      (context) => <PopupMenuEntry<String>>[
+                      (_) => [
                         for (final cat in widget.existingCategories)
                           PopupMenuItem<String>(
                             value: cat,
@@ -239,6 +257,88 @@ class _NoteFormPageState extends State<NoteFormPage> {
                         ),
                       ],
                 ),
+                IconButton(
+                  icon: const Icon(
+                    Icons.add_photo_alternate_outlined,
+                    color: AppColors.black,
+                  ),
+                  tooltip: "Add Image",
+                  onPressed: () {
+                    showModalBottomSheet(
+                      context: context,
+                      backgroundColor: AppColors.white,
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.vertical(
+                          top: Radius.circular(20),
+                        ),
+                      ),
+                      builder:
+                          (_) => SafeArea(
+                            child: Padding(
+                              padding: const EdgeInsets.fromLTRB(
+                                20,
+                                20,
+                                20,
+                                30,
+                              ),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  ListTile(
+                                    leading: Icon(
+                                      Icons.photo_camera,
+                                      color: AppColors.grey850,
+                                    ),
+                                    title: const Text(
+                                      "Take Photo",
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                    textColor: AppColors.black,
+                                    onTap: () {
+                                      Navigator.pop(context);
+                                      _pickImage(ImageSource.camera);
+                                    },
+                                  ),
+                                  const SizedBox(height: 12),
+                                  ListTile(
+                                    leading: Icon(
+                                      Icons.photo_library,
+                                      color: AppColors.grey850,
+                                    ),
+                                    title: const Text(
+                                      "Choose from Gallery",
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                    textColor: AppColors.black,
+                                    onTap: () {
+                                      Navigator.pop(context);
+                                      _pickImage(ImageSource.gallery);
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                    );
+                  },
+                ),
+                if (!_showSave)
+                  IconButton(
+                    icon: const Icon(Icons.edit, color: AppColors.black),
+                    tooltip: 'Edit',
+                    onPressed: () {
+                      setState(() {
+                        _showSave = true;
+                      });
+                      _focusNode.requestFocus();
+                    },
+                  ),
                 const SizedBox(width: 8),
               ],
             );
@@ -247,55 +347,151 @@ class _NoteFormPageState extends State<NoteFormPage> {
       ),
       body: Padding(
         padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-        child: Column(
-          children: [
-            Expanded(
-              child: TextField(
-                controller: _noteController,
-                focusNode: _focusNode,
-                decoration: const InputDecoration(
-                  hintText: "Start writing...",
-                  border: InputBorder.none,
-                  isCollapsed: true,
-                  contentPadding: EdgeInsets.zero,
-                ),
-                style: const TextStyle(fontSize: 16, color: AppColors.black),
-                maxLines: null,
-                keyboardType: TextInputType.multiline,
-                autofocus: _autofocus,
-                cursorColor: AppColors.black,
-                scrollPhysics: const BouncingScrollPhysics(),
-              ),
-            ),
-            const SizedBox(height: 12),
-            if (_showSave)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 48),
-                child: SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: _saveNote,
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      backgroundColor: AppColors.grey850,
-                      foregroundColor: AppColors.white,
-                      elevation: 0,
-                    ),
-                    child: const Text(
-                      "Save Note",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
+        child:
+            _showSave
+                ? Column(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _noteController,
+                        focusNode: _focusNode,
+                        decoration: const InputDecoration(
+                          hintText: "Start writing...",
+                          border: InputBorder.none,
+                          isCollapsed: true,
+                          contentPadding: EdgeInsets.zero,
+                        ),
+                        style: const TextStyle(
+                          fontSize: 16,
+                          color: AppColors.black,
+                        ),
+                        maxLines: null,
+                        keyboardType: TextInputType.multiline,
+                        autofocus: _autofocus,
+                        cursorColor: AppColors.black,
+                        scrollPhysics: const BouncingScrollPhysics(),
                       ),
                     ),
+                    if (_mediaData.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        child: SizedBox(
+                          height: 100,
+                          child: ListView.separated(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: _mediaData.length,
+                            separatorBuilder:
+                                (_, __) => const SizedBox(width: 8),
+                            itemBuilder: (context, index) {
+                              final bytes = _mediaData[index];
+                              return Stack(
+                                children: [
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(12),
+                                    child: Image.memory(
+                                      bytes,
+                                      height: 100,
+                                      width: 100,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                  Positioned(
+                                    top: 4,
+                                    right: 4,
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          _mediaData.removeAt(index);
+                                        });
+                                      },
+                                      child: Container(
+                                        decoration: const BoxDecoration(
+                                          color: Colors.black54,
+                                          shape: BoxShape.circle,
+                                        ),
+                                        padding: const EdgeInsets.all(4),
+                                        child: const Icon(
+                                          Icons.close,
+                                          size: 16,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                    const SizedBox(height: 12),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 48),
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: _saveNote,
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            backgroundColor: AppColors.grey850,
+                            foregroundColor: AppColors.white,
+                            elevation: 0,
+                          ),
+                          child: const Text(
+                            "Save Note",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                )
+                : SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  padding: const EdgeInsets.only(bottom: 48),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      TextField(
+                        controller: _noteController,
+                        readOnly: true,
+                        decoration: const InputDecoration(
+                          hintText: "Start writing...",
+                          border: InputBorder.none,
+                          isCollapsed: true,
+                          contentPadding: EdgeInsets.zero,
+                        ),
+                        style: const TextStyle(
+                          fontSize: 16,
+                          color: AppColors.black,
+                        ),
+                        maxLines: null,
+                        keyboardType: TextInputType.multiline,
+                        cursorColor: AppColors.black,
+                      ),
+                      const SizedBox(height: 4),
+                      for (final bytes in _mediaData) ...[
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 4),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: Image.memory(
+                              bytes,
+                              width: double.infinity,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
                   ),
                 ),
-              ),
-          ],
-        ),
       ),
     );
   }

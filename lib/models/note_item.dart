@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:hive/hive.dart';
 
 part 'note_item.g.dart';
@@ -22,6 +23,9 @@ class NoteItem extends HiveObject {
   @HiveField(5)
   final Map<String, dynamic> customFields;
 
+  @HiveField(6)
+  final List<Uint8List> mediaData;
+
   NoteItem({
     required this.id,
     required this.title,
@@ -29,5 +33,6 @@ class NoteItem extends HiveObject {
     required this.category,
     required this.createdAt,
     required this.customFields,
+    this.mediaData = const [],
   });
 }

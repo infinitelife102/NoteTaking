@@ -23,13 +23,14 @@ class NoteItemAdapter extends TypeAdapter<NoteItem> {
       category: fields[3] as String,
       createdAt: fields[4] as DateTime,
       customFields: (fields[5] as Map).cast<String, dynamic>(),
+      mediaData: (fields[6] as List).cast<Uint8List>(),
     );
   }
 
   @override
   void write(BinaryWriter writer, NoteItem obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(7)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -41,7 +42,9 @@ class NoteItemAdapter extends TypeAdapter<NoteItem> {
       ..writeByte(4)
       ..write(obj.createdAt)
       ..writeByte(5)
-      ..write(obj.customFields);
+      ..write(obj.customFields)
+      ..writeByte(6)
+      ..write(obj.mediaData);
   }
 
   @override
