@@ -89,15 +89,20 @@ class TrashPage extends StatelessWidget {
                           context: context,
                           builder:
                               (ctx) => AlertDialog(
+                                backgroundColor: AppColors.white,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(20),
                                 ),
                                 title: const Text(
                                   "Delete Permanently?",
-                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.black,
+                                  ),
                                 ),
                                 content: const Text(
                                   "This note will be deleted forever.",
+                                  style: TextStyle(color: AppColors.black),
                                 ),
                                 actionsPadding: const EdgeInsets.symmetric(
                                   horizontal: 16,

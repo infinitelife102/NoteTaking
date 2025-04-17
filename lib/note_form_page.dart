@@ -93,23 +93,58 @@ class _NoteFormPageState extends State<NoteFormPage> {
       builder: (BuildContext context) {
         final controller = TextEditingController();
         return AlertDialog(
+          backgroundColor: AppColors.white,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(20),
           ),
-          title: const Text("Create New Category"),
+          title: const Text(
+            "Create New Category",
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: AppColors.black,
+            ),
+          ),
           content: TextField(
             controller: controller,
             autofocus: true,
-            decoration: const InputDecoration(hintText: "Enter category name"),
+            style: const TextStyle(color: AppColors.black),
+            decoration: InputDecoration(
+              hintText: "Enter category name",
+              hintStyle: TextStyle(color: AppColors.black.withOpacity(0.4)),
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: AppColors.grey850),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: AppColors.grey850, width: 2),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              filled: true,
+              fillColor: AppColors.grey900.withOpacity(0.05),
+            ),
           ),
-          actions: <Widget>[
+          actionsPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 8,
+          ),
+          actions: [
             TextButton(
-              child: const Text("Cancel"),
               onPressed: () => Navigator.pop(context),
+              style: TextButton.styleFrom(
+                foregroundColor: AppColors.black.withOpacity(0.7),
+              ),
+              child: const Text("Cancel"),
             ),
             ElevatedButton(
-              child: const Text("Add"),
               onPressed: () => Navigator.pop(context, controller.text.trim()),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.grey850,
+                foregroundColor: AppColors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              child: const Text("Add"),
             ),
           ],
         );
