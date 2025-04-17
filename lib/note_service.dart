@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:typed_data';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hive/hive.dart';
 import 'models/note_item.dart';
@@ -12,32 +13,27 @@ class NoteService {
     sync: true,
   );
   late Box<NoteItem> _box;
+  final _secureStorage = const FlutterSecureStorage();
 
   Stream<List<NoteItem>> get notesStream => _noteController.stream;
 
-  final _secureStorage = const FlutterSecureStorage();
-
   Future<void> init() async {
     final encryptionKey = await _getOrCreateEncryptionKey();
-
     _box = await Hive.openBox<NoteItem>(
       boxName,
       encryptionCipher: HiveAesCipher(encryptionKey),
     );
-
     await cleanOldTrash();
     _noteController.add(_box.values.toList());
   }
 
   Future<List<int>> _getOrCreateEncryptionKey() async {
     String? encodedKey = await _secureStorage.read(key: secureKeyName);
-
     if (encodedKey == null) {
       final newKey = Hive.generateSecureKey();
       encodedKey = base64UrlEncode(newKey);
       await _secureStorage.write(key: secureKeyName, value: encodedKey);
     }
-
     return base64Url.decode(encodedKey);
   }
 
@@ -52,34 +48,33 @@ class NoteService {
   }
 
   void moveToTrash(NoteItem note) {
-    final trashedNote = NoteItem(
+    final trashed = NoteItem(
       id: note.id,
       title: note.title,
       content: note.content,
       category: 'trashed',
       createdAt: note.createdAt,
       customFields: {...note.customFields, 'previousCategory': note.category},
+      mediaData: List<Uint8List>.from(note.mediaData),
     );
-    _box.put(trashedNote.id, trashedNote);
+    _box.put(trashed.id, trashed);
     _noteController.add(_box.values.toList());
   }
 
   void restoreFromTrash(NoteItem note) {
-    final previousCategory =
-        note.customFields['previousCategory'] ?? 'Restored';
-
+    final prevCat = note.customFields['previousCategory'] as String? ?? 'All';
     final cleanedFields = {...note.customFields}..remove('previousCategory');
 
-    final restoredNote = NoteItem(
+    final restored = NoteItem(
       id: note.id,
       title: note.title,
       content: note.content,
-      category: previousCategory,
+      category: prevCat,
       createdAt: note.createdAt,
       customFields: cleanedFields,
+      mediaData: List<Uint8List>.from(note.mediaData),
     );
-
-    _box.put(restoredNote.id, restoredNote);
+    _box.put(restored.id, restored);
     _noteController.add(_box.values.toList());
   }
 
@@ -99,7 +94,6 @@ class NoteService {
     for (final note in toDelete) {
       await _box.delete(note.id);
     }
-
     _noteController.add(_box.values.toList());
   }
 
