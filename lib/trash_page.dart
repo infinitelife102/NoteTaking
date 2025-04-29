@@ -94,7 +94,7 @@ class TrashPage extends StatelessWidget {
                                   borderRadius: BorderRadius.circular(20),
                                 ),
                                 title: const Text(
-                                  "Delete Permanently?",
+                                  "Delete permanently?",
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     color: AppColors.black,

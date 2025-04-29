@@ -97,7 +97,7 @@ class _NoteFormPageState extends State<NoteFormPage> {
             borderRadius: BorderRadius.circular(20),
           ),
           title: const Text(
-            "Create New Category",
+            "Create new category",
             style: TextStyle(
               fontWeight: FontWeight.bold,
               color: AppColors.black,

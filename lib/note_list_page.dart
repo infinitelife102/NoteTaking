@@ -219,7 +219,7 @@ class _NoteListPageState extends State<NoteListPage> {
                                       borderRadius: BorderRadius.circular(20),
                                     ),
                                     title: const Text(
-                                      "Move to Trash?",
+                                      "Move to trash?",
                                       style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         color: AppColors.black,
