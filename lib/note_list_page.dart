@@ -172,28 +172,49 @@ class _NoteListPageState extends State<NoteListPage> {
         children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-            child: TextField(
-              controller: _searchController,
-              decoration: InputDecoration(
-                hintText: 'Search notes...',
-                prefixIcon: const Icon(Icons.search, color: AppColors.black),
-                filled: true,
-                fillColor: AppColors.grey.withOpacity(0.05),
-                contentPadding: const EdgeInsets.symmetric(vertical: 0),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: AppColors.grey),
+            child: Row(
+              children: <Widget>[
+                Expanded(
+                  child: TextField(
+                    controller: _searchController,
+                    decoration: InputDecoration(
+                      hintText: 'Search notes...',
+                      prefixIcon: const Icon(Icons.search, color: AppColors.black),
+                      filled: true,
+                      fillColor: AppColors.grey.withOpacity(0.05),
+                      contentPadding: const EdgeInsets.symmetric(vertical: 0),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: AppColors.grey),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: AppColors.grey),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: AppColors.grey, width: 2),
+                      ),
+                    ),
+                    style: const TextStyle(color: AppColors.black),
+                  ),
                 ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: AppColors.grey),
+                const SizedBox(width: 8),
+                IconButton(
+                  icon: const Icon(Icons.delete_outline),
+                  color: AppColors.black,
+                  iconSize: 24.0,
+                  padding: const EdgeInsets.all(0),
+                  constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                  splashRadius: 20,
+                  tooltip: 'Open Trash',
+                  onPressed:
+                      () => Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => TrashPage(noteService: widget.noteService)),
+                      ),
                 ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: AppColors.grey, width: 2),
-                ),
-              ),
-              style: const TextStyle(color: AppColors.black),
+              ],
             ),
           ),
           Expanded(
@@ -335,24 +356,6 @@ class _NoteListPageState extends State<NoteListPage> {
                         );
                       },
                     ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 20.0),
-            child: TextButton(
-              onPressed: () {
-                Navigator.push(context, MaterialPageRoute(builder: (_) => TrashPage(noteService: widget.noteService)));
-              },
-              child: Text(
-                "Go to Trash",
-                style: TextStyle(
-                  color: AppColors.black.withOpacity(0.7),
-                  decoration: TextDecoration.underline,
-                  decorationColor: AppColors.black.withOpacity(0.7),
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
           ),
         ],
       ),
