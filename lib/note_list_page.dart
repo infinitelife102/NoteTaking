@@ -113,41 +113,33 @@ class _NoteListPageState extends State<NoteListPage> {
         backgroundColor: AppColors.white,
         elevation: 0,
         iconTheme: const IconThemeData(color: AppColors.black),
-        title: Text(
-          _selectedCategory == 'All' ? 'All Notes' : _selectedCategory,
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            color: AppColors.black,
+        title: PopupMenuButton<String>(
+          initialValue: _selectedCategory,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          color: AppColors.white,
+          elevation: 8,
+          tooltip: 'Select Category',
+          onSelected: (value) {
+            setState(() {
+              _selectedCategory = value;
+            });
+            _saveSelectedCategory(value);
+          },
+          itemBuilder: (context) => _buildCategoryItems(),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                _selectedCategory == 'All' ? 'All Notes' : _selectedCategory,
+                style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.black,
+                ),
+              ),
+              const SizedBox(width: 4),
+              const Icon(Icons.arrow_drop_down, color: AppColors.black),
+            ],
           ),
         ),
         actions: [
-          PopupMenuButton<String>(
-            initialValue: _selectedCategory,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            color: AppColors.white,
-            elevation: 8,
-            icon: const Icon(Icons.category_outlined, color: AppColors.black),
-            onSelected: (value) {
-              setState(() {
-                _selectedCategory = value;
-              });
-              _saveSelectedCategory(value);
-            },
-            itemBuilder: (context) => _buildCategoryItems(),
-          ),
-          IconButton(
-            icon: const Icon(Icons.delete_outline, color: AppColors.black),
-            tooltip: 'Trash',
-            onPressed:
-                () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => TrashPage(noteService: widget.noteService),
-                  ),
-                ),
-          ),
           TextButton(
             style: TextButton.styleFrom(
               backgroundColor: AppColors.grey,
@@ -343,6 +335,24 @@ class _NoteListPageState extends State<NoteListPage> {
                         );
                       },
                     ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 20.0),
+            child: TextButton(
+              onPressed: () {
+                Navigator.push(context, MaterialPageRoute(builder: (_) => TrashPage(noteService: widget.noteService)));
+              },
+              child: Text(
+                "Go to Trash",
+                style: TextStyle(
+                  color: AppColors.black.withOpacity(0.7),
+                  decoration: TextDecoration.underline,
+                  decorationColor: AppColors.black.withOpacity(0.7),
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
           ),
         ],
       ),
