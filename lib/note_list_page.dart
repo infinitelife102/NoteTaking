@@ -148,6 +148,32 @@ class _NoteListPageState extends State<NoteListPage> {
                   ),
                 ),
           ),
+          TextButton(
+            style: TextButton.styleFrom(
+              backgroundColor: AppColors.grey,
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+            onPressed: () async {
+              final newNote = await Navigator.push<NoteItem>(
+                context,
+                MaterialPageRoute(
+                  builder:
+                      (_) => NoteFormPage(
+                        existingCategories: _getAllCategories(),
+                        initialCategory: _selectedCategory != 'All' ? _selectedCategory : null,
+                      ),
+                ),
+              );
+              if (newNote != null) {
+                widget.noteService.addNote(newNote);
+                setState(() => _selectedCategory = 'All');
+                _saveSelectedCategory('All');
+              }
+            },
+            child: const Text('New note', style: TextStyle(color: AppColors.white, fontWeight: FontWeight.bold)),
+          ),
+          const SizedBox(width: 16),
         ],
       ),
       body: Column(
@@ -319,29 +345,6 @@ class _NoteListPageState extends State<NoteListPage> {
                     ),
           ),
         ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: AppColors.grey,
-        foregroundColor: AppColors.white,
-        onPressed: () async {
-          final newNote = await Navigator.push<NoteItem>(
-            context,
-            MaterialPageRoute(
-              builder:
-                  (_) => NoteFormPage(
-                    existingCategories: _getAllCategories(),
-                    initialCategory:
-                        _selectedCategory != 'All' ? _selectedCategory : null,
-                  ),
-            ),
-          );
-          if (newNote != null) {
-            widget.noteService.addNote(newNote);
-            setState(() => _selectedCategory = 'All');
-            _saveSelectedCategory('All');
-          }
-        },
-        child: const Icon(Icons.add),
       ),
     );
   }

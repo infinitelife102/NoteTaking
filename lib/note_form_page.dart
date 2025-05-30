@@ -329,15 +329,39 @@ class _NoteFormPageState extends State<NoteFormPage> {
                   },
                 ),
                 if (!_showSave)
-                  IconButton(
-                    icon: const Icon(Icons.edit, color: AppColors.black),
-                    tooltip: 'Edit',
-                    onPressed: () {
-                      setState(() {
-                        _showSave = true;
-                      });
-                      _focusNode.requestFocus();
-                    },
+                  Padding(
+                    padding: const EdgeInsets.only(left: 8.0),
+                    child: TextButton(
+                      style: TextButton.styleFrom(
+                        backgroundColor: AppColors.grey,
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      ),
+                      onPressed: () {
+                        setState(() => _showSave = true);
+                        _focusNode.requestFocus();
+                      },
+                      child: const Text(
+                        'Edit note',
+                        style: TextStyle(color: AppColors.white, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                if (_showSave)
+                  Padding(
+                    padding: const EdgeInsets.only(left: 8.0),
+                    child: TextButton(
+                      style: TextButton.styleFrom(
+                        backgroundColor: AppColors.grey,
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      ),
+                      onPressed: _saveNote,
+                      child: const Text(
+                        'Save note',
+                        style: TextStyle(color: AppColors.white, fontWeight: FontWeight.bold),
+                      ),
+                    ),
                   ),
                 const SizedBox(width: 8),
               ],
@@ -425,31 +449,7 @@ class _NoteFormPageState extends State<NoteFormPage> {
                         ),
                       ),
                     const SizedBox(height: 12),
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 48),
-                      child: SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: _saveNote,
-                          style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 16),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            backgroundColor: AppColors.grey,
-                            foregroundColor: AppColors.white,
-                            elevation: 0,
-                          ),
-                          child: const Text(
-                            "Save Note",
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
+                    const SizedBox(height: 48),
                   ],
                 )
                 : SingleChildScrollView(
