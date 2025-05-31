@@ -421,6 +421,7 @@ class _NoteFormPageState extends State<NoteFormPage> {
                         style: const TextStyle(
                           fontSize: 16,
                           color: AppColors.black,
+                          fontWeight: FontWeight.w500,
                           height: 1.5,
                         ),
                         maxLines: null,
@@ -508,7 +509,7 @@ class _NoteFormPageState extends State<NoteFormPage> {
                       ),
 
                       if (_titleController.text.isNotEmpty && _contentController.text.isNotEmpty)
-                        const SizedBox(height: 8),
+                        const SizedBox(height: 4),
                       TextField(
                         controller: _contentController,
                         focusNode: _contentFocusNode,
