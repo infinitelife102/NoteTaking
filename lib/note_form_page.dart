@@ -165,6 +165,11 @@ class _NoteFormPageState extends State<NoteFormPage> {
     final title = _titleController.text.trim();
     final content = _contentController.text.trim();
 
+    if (title.isEmpty && content.isEmpty && _mediaData.isEmpty) {
+      Navigator.pop(context);
+      return;
+    }
+
     final note = NoteItem(
       id: widget.initialNote?.id ?? _uuid.v4(),
       title: title,
