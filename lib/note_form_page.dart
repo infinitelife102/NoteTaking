@@ -23,14 +23,16 @@ class NoteFormPage extends StatefulWidget {
 }
 
 class _NoteFormPageState extends State<NoteFormPage> {
-  final TextEditingController _noteController = TextEditingController();
-  final FocusNode _focusNode = FocusNode();
+  final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _contentController = TextEditingController();
+  final FocusNode _titleFocusNode = FocusNode();
+  final FocusNode _contentFocusNode = FocusNode();
   final ImagePicker _picker = ImagePicker();
   final List<Uint8List> _mediaData = [];
   final _uuid = const Uuid();
 
   String _selectedCategory = '';
-  bool _autofocus = true;
+  bool _autofocusTitle = true;
   bool _showSave = false;
 
   @override
@@ -38,10 +40,11 @@ class _NoteFormPageState extends State<NoteFormPage> {
     super.initState();
     final note = widget.initialNote;
     if (note != null) {
-      _noteController.text = '${note.title}\n${note.content}';
+      _titleController.text = note.title;
+      _contentController.text = note.content;
       _selectedCategory = note.category;
       _mediaData.addAll(note.mediaData);
-      _autofocus = false;
+      _autofocusTitle = false;
       _showSave = false;
     } else {
       _selectedCategory =
@@ -49,21 +52,34 @@ class _NoteFormPageState extends State<NoteFormPage> {
           (widget.existingCategories.isNotEmpty
               ? widget.existingCategories.first
               : 'General');
-      _autofocus = true;
+      _autofocusTitle = true;
       _showSave = true;
     }
 
-    _focusNode.addListener(() {
-      if (_focusNode.hasFocus && !_showSave) {
-        setState(() => _showSave = true);
-      }
-    });
+    _titleFocusNode.addListener(_handleFocusChange);
+    _contentFocusNode.addListener(_handleFocusChange);
+    _titleController.addListener(_handleTextChange);
+    _contentController.addListener(_handleTextChange);
+  }
+
+  void _handleFocusChange() {
+    if ((_titleFocusNode.hasFocus || _contentFocusNode.hasFocus) && !_showSave) {
+      setState(() => _showSave = true);
+    }
+  }
+
+  void _handleTextChange() {
+    if (!_showSave) {
+      setState(() => _showSave = true);
+    }
   }
 
   @override
   void dispose() {
-    _focusNode.dispose();
-    _noteController.dispose();
+    _titleFocusNode.dispose();
+    _contentFocusNode.dispose();
+    _titleController.dispose();
+    _contentController.dispose();
     super.dispose();
   }
 
@@ -76,13 +92,6 @@ class _NoteFormPageState extends State<NoteFormPage> {
         _showSave = true;
       });
     }
-  }
-
-  String _extractTitle(String text) {
-    final lines = text.trim().split('\n');
-    return (lines.isNotEmpty && lines.first.trim().isNotEmpty)
-        ? lines.first.trim()
-        : 'Untitled';
   }
 
   Future<String?> _promptForCategory() async {
@@ -153,9 +162,8 @@ class _NoteFormPageState extends State<NoteFormPage> {
   }
 
   void _saveNote() {
-    final lines = _noteController.text.trim().split('\n');
-    final title = lines.isNotEmpty ? lines.first.trim() : '';
-    final content = lines.length > 1 ? lines.sublist(1).join('\n').trim() : '';
+    final title = _titleController.text.trim();
+    final content = _contentController.text.trim();
 
     final note = NoteItem(
       id: widget.initialNote?.id ?? _uuid.v4(),
@@ -179,9 +187,10 @@ class _NoteFormPageState extends State<NoteFormPage> {
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(72),
         child: ValueListenableBuilder<TextEditingValue>(
-          valueListenable: _noteController,
+          valueListenable: _titleController,
           builder: (context, value, child) {
-            final dynamicTitle = _extractTitle(value.text);
+            final appBarTitleText = value.text.trim();
+            final dynamicTitle = appBarTitleText.isNotEmpty ? appBarTitleText : 'Untitled';
             return AppBar(
               backgroundColor: AppColors.white,
               elevation: 0,
@@ -339,7 +348,7 @@ class _NoteFormPageState extends State<NoteFormPage> {
                       ),
                       onPressed: () {
                         setState(() => _showSave = true);
-                        _focusNode.requestFocus();
+                        _titleFocusNode.requestFocus();
                       },
                       child: const Text(
                         'Edit note',
@@ -374,24 +383,43 @@ class _NoteFormPageState extends State<NoteFormPage> {
         child:
             _showSave
                 ? Column(
+                
                   children: [
+                    TextField(
+                      controller: _titleController,
+                      focusNode: _titleFocusNode,
+                      decoration: const InputDecoration(
+                        hintText: "Title",
+                        border: InputBorder.none,
+                        isCollapsed: true,
+                        contentPadding: EdgeInsets.only(top: 8, bottom: 12),
+                      ),
+                      style: const TextStyle(fontSize: 28.0, fontWeight: FontWeight.bold, color: AppColors.black),
+                      maxLines: null,
+                      keyboardType: TextInputType.multiline,
+                      textCapitalization: TextCapitalization.sentences,
+                      autofocus: _autofocusTitle,
+                      cursorColor: AppColors.black,
+                      textInputAction: TextInputAction.next,
+                      onSubmitted: (_) => FocusScope.of(context).requestFocus(_contentFocusNode),
+                    ),
                     Expanded(
                       child: TextField(
-                        controller: _noteController,
-                        focusNode: _focusNode,
+                        controller: _contentController,
+                        focusNode: _contentFocusNode,
                         decoration: const InputDecoration(
-                          hintText: "Start writing...",
+                          hintText: "Note",
                           border: InputBorder.none,
                           isCollapsed: true,
-                          contentPadding: EdgeInsets.zero,
+                          contentPadding: EdgeInsets.only(top: 4),
                         ),
                         style: const TextStyle(
                           fontSize: 16,
                           color: AppColors.black,
+                          height: 1.5,
                         ),
                         maxLines: null,
                         keyboardType: TextInputType.multiline,
-                        autofocus: _autofocus,
                         cursorColor: AppColors.black,
                         scrollPhysics: const BouncingScrollPhysics(),
                       ),
@@ -453,29 +481,53 @@ class _NoteFormPageState extends State<NoteFormPage> {
                   ],
                 )
                 : SingleChildScrollView(
+                
                   physics: const BouncingScrollPhysics(),
                   padding: const EdgeInsets.only(bottom: 48),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       TextField(
-                        controller: _noteController,
+                        controller: _titleController,
+                        focusNode: _titleFocusNode,
                         readOnly: true,
                         decoration: const InputDecoration(
-                          hintText: "Start writing...",
+                          hintText: "Title",
                           border: InputBorder.none,
                           isCollapsed: true,
-                          contentPadding: EdgeInsets.zero,
+                          contentPadding: EdgeInsets.only(top: 8, bottom: 12),
+                        ),
+                        style: const TextStyle(fontSize: 28.0, fontWeight: FontWeight.bold, color: AppColors.black),
+                        maxLines: null,
+                        cursorColor: AppColors.black,
+                      ),
+
+                      if (_titleController.text.isNotEmpty && _contentController.text.isNotEmpty)
+                        const SizedBox(height: 8),
+                      TextField(
+                        controller: _contentController,
+                        focusNode: _contentFocusNode,
+                        readOnly: true,
+                        decoration: const InputDecoration(
+                          hintText: "Note",
+                          border: InputBorder.none,
+                          isCollapsed: true,
+                          contentPadding: EdgeInsets.only(top: 4),
                         ),
                         style: const TextStyle(
                           fontSize: 16,
                           color: AppColors.black,
+                          height: 1.5,
                         ),
                         maxLines: null,
                         keyboardType: TextInputType.multiline,
                         cursorColor: AppColors.black,
                       ),
-                      const SizedBox(height: 4),
+                      if (_mediaData.isNotEmpty &&
+                          (_titleController.text.isNotEmpty || _contentController.text.isNotEmpty))
+                        const SizedBox(height: 12),
+                      if (_mediaData.isNotEmpty && _titleController.text.isEmpty && _contentController.text.isEmpty)
+                        const SizedBox(height: 4),
                       for (final bytes in _mediaData) ...[
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 4),
