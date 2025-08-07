@@ -82,7 +82,10 @@ class _NoteListPageState extends State<NoteListPage> {
     cats = LinkedHashSet<String>.from(cats).toList();
 
     return cats.map((cat) {
-      return PopupMenuItem<String>(value: cat, child: Text(cat, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500)));
+      return PopupMenuItem<String>(
+        value: cat,
+        child: Text(cat, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: AppColors.primaryfontColor)),
+      );
     }).toList();
   }
 
