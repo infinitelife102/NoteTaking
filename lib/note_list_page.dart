@@ -168,6 +168,7 @@ class _NoteListPageState extends State<NoteListPage> {
                     controller: _searchController,
                     decoration: InputDecoration(
                       hintText: 'Search notes...',
+                      hintStyle: TextStyle(color: AppColors.secondaryfontColor.withOpacity(0.7)),
                       prefixIcon: const Icon(Icons.search, color: AppColors.primaryfontColor),
                       filled: true,
                       fillColor: AppColors.secondaryfontColor.withOpacity(0.05),

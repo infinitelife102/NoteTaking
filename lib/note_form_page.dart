@@ -302,7 +302,6 @@ class _NoteFormPageState extends State<NoteFormPage> {
                       controller: _titleController,
                       focusNode: _titleFocusNode,
                       decoration: const InputDecoration(
-                        hintText: "Title",
                         border: InputBorder.none,
                         isCollapsed: true,
                         contentPadding: EdgeInsets.only(top: 8, bottom: 12),
@@ -321,7 +320,6 @@ class _NoteFormPageState extends State<NoteFormPage> {
                         controller: _contentController,
                         focusNode: _contentFocusNode,
                         decoration: const InputDecoration(
-                          hintText: "Note",
                           border: InputBorder.none,
                           isCollapsed: true,
                           contentPadding: EdgeInsets.only(top: 4),
@@ -387,7 +385,6 @@ class _NoteFormPageState extends State<NoteFormPage> {
                         focusNode: _titleFocusNode,
                         readOnly: true,
                         decoration: const InputDecoration(
-                          hintText: "Title",
                           border: InputBorder.none,
                           isCollapsed: true,
                           contentPadding: EdgeInsets.only(top: 8, bottom: 12),
@@ -403,7 +400,6 @@ class _NoteFormPageState extends State<NoteFormPage> {
                         focusNode: _contentFocusNode,
                         readOnly: true,
                         decoration: const InputDecoration(
-                          hintText: "Note",
                           border: InputBorder.none,
                           isCollapsed: true,
                           contentPadding: EdgeInsets.only(top: 4),
