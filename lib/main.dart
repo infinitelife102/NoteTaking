@@ -24,10 +24,7 @@ void main() async {
 
   final encryptionKey = base64Url.decode(encodedKey);
 
-  await Hive.openBox<NoteItem>(
-    NoteService.boxName,
-    encryptionCipher: HiveAesCipher(encryptionKey),
-  );
+  await Hive.openBox<NoteItem>(NoteService.boxName, encryptionCipher: HiveAesCipher(encryptionKey));
 
   final noteService = NoteService();
   await noteService.init();
@@ -44,17 +41,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'nospass',
-      theme: ThemeData.light().copyWith(
+      theme: ThemeData.dark().copyWith(
         scaffoldBackgroundColor: Colors.white,
         textTheme: GoogleFonts.poppinsTextTheme(),
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Colors.white,
-          foregroundColor: Colors.black,
-        ),
-        floatingActionButtonTheme: const FloatingActionButtonThemeData(
-          backgroundColor: Colors.black,
-          foregroundColor: Colors.white,
-        ),
+        appBarTheme: const AppBarTheme(backgroundColor: Colors.white, foregroundColor: Colors.black),
+        floatingActionButtonTheme: const FloatingActionButtonThemeData(backgroundColor: Colors.black, foregroundColor: Colors.white),
       ),
       debugShowCheckedModeBanner: false,
       home: NoteListPage(noteService: noteService),

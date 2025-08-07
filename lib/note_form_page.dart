@@ -11,12 +11,7 @@ class NoteFormPage extends StatefulWidget {
   final NoteItem? initialNote;
   final String? initialCategory;
 
-  const NoteFormPage({
-    Key? key,
-    required this.existingCategories,
-    this.initialNote,
-    this.initialCategory,
-  }) : super(key: key);
+  const NoteFormPage({Key? key, required this.existingCategories, this.initialNote, this.initialCategory}) : super(key: key);
 
   @override
   State<NoteFormPage> createState() => _NoteFormPageState();
@@ -47,11 +42,7 @@ class _NoteFormPageState extends State<NoteFormPage> {
       _autofocusTitle = false;
       _showSave = false;
     } else {
-      _selectedCategory =
-          widget.initialCategory ??
-          (widget.existingCategories.isNotEmpty
-              ? widget.existingCategories.first
-              : 'General');
+      _selectedCategory = widget.initialCategory ?? (widget.existingCategories.isNotEmpty ? widget.existingCategories.first : 'General');
       _autofocusTitle = true;
       _showSave = true;
     }
@@ -101,56 +92,41 @@ class _NoteFormPageState extends State<NoteFormPage> {
       builder: (ctx) {
         final controller = TextEditingController();
         return AlertDialog(
-          backgroundColor: AppColors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          title: const Text(
-            "Create new category",
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: AppColors.black,
-            ),
-          ),
+          backgroundColor: AppColors.backgroundColor,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          title: const Text("Create new category", style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.primaryfontColor)),
           content: TextField(
             controller: controller,
             autofocus: true,
-            style: const TextStyle(color: AppColors.black),
+            style: const TextStyle(color: AppColors.primaryfontColor),
             decoration: InputDecoration(
               hintText: "Enter category name",
-              hintStyle: TextStyle(color: AppColors.black.withOpacity(0.4)),
+              hintStyle: TextStyle(color: AppColors.primaryfontColor.withOpacity(0.4)),
               enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: AppColors.grey),
+                borderSide: BorderSide(color: AppColors.secondaryfontColor),
                 borderRadius: BorderRadius.circular(12),
               ),
               focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: AppColors.grey, width: 2),
+                borderSide: BorderSide(color: AppColors.secondaryfontColor, width: 2),
                 borderRadius: BorderRadius.circular(12),
               ),
               filled: true,
-              fillColor: AppColors.grey.withOpacity(0.05),
+              fillColor: AppColors.secondaryfontColor.withOpacity(0.05),
             ),
           ),
-          actionsPadding: const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 8,
-          ),
+          actionsPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx, null),
-              style: TextButton.styleFrom(
-                foregroundColor: AppColors.black.withOpacity(0.7),
-              ),
+              style: TextButton.styleFrom(foregroundColor: AppColors.primaryfontColor.withOpacity(0.7)),
               child: const Text("Cancel"),
             ),
             ElevatedButton(
               onPressed: () => Navigator.pop(ctx, controller.text.trim()),
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.grey,
-                foregroundColor: AppColors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
+                backgroundColor: AppColors.secondaryfontColor,
+                foregroundColor: AppColors.backgroundColor,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
               ),
               child: const Text("Add"),
             ),
@@ -176,9 +152,7 @@ class _NoteFormPageState extends State<NoteFormPage> {
       content: content,
       category: _selectedCategory.trim(),
       createdAt: widget.initialNote?.createdAt ?? DateTime.now(),
-      customFields: Map<String, dynamic>.from(
-        widget.initialNote?.customFields ?? {},
-      ),
+      customFields: Map<String, dynamic>.from(widget.initialNote?.customFields ?? {}),
       mediaData: _mediaData,
     );
 
@@ -188,7 +162,7 @@ class _NoteFormPageState extends State<NoteFormPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: AppColors.backgroundColor,
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(72),
         child: ValueListenableBuilder<TextEditingValue>(
@@ -197,43 +171,26 @@ class _NoteFormPageState extends State<NoteFormPage> {
             final appBarTitleText = value.text.trim();
             final dynamicTitle = appBarTitleText.isNotEmpty ? appBarTitleText : 'Untitled';
             return AppBar(
-              backgroundColor: AppColors.white,
+              backgroundColor: AppColors.backgroundColor,
               elevation: 0,
-              foregroundColor: AppColors.black,
+              foregroundColor: AppColors.primaryfontColor,
               titleSpacing: 16,
               title: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
-                    dynamicTitle,
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                  Text(dynamicTitle, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 2),
-                  Text(
-                    _selectedCategory,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: AppColors.black.withOpacity(0.6),
-                    ),
-                  ),
+                  Text(_selectedCategory, style: TextStyle(fontSize: 12, color: AppColors.primaryfontColor.withOpacity(0.6))),
                 ],
               ),
               actions: [
                 PopupMenuButton<String>(
                   initialValue: _selectedCategory,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  color: AppColors.white,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  color: AppColors.backgroundColor,
                   elevation: 8,
-                  icon: const Icon(
-                    Icons.category_outlined,
-                    color: AppColors.black,
-                  ),
+                  icon: const Icon(Icons.category_outlined, color: AppColors.primaryfontColor),
                   tooltip: "Select Category",
                   onSelected: (value) async {
                     if (value == 'New Category') {
@@ -250,67 +207,34 @@ class _NoteFormPageState extends State<NoteFormPage> {
                         for (final cat in widget.existingCategories)
                           PopupMenuItem<String>(
                             value: cat,
-                            child: Text(
-                              cat,
-                              style: const TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
+                            child: Text(cat, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
                           ),
                         const PopupMenuDivider(),
                         const PopupMenuItem<String>(
                           value: 'New Category',
-                          child: Text(
-                            "➕ New Category",
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
+                          child: Text("➕ New Category", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
                         ),
                       ],
                 ),
                 IconButton(
-                  icon: const Icon(
-                    Icons.add_photo_alternate_outlined,
-                    color: AppColors.black,
-                  ),
+                  icon: const Icon(Icons.add_photo_alternate_outlined, color: AppColors.primaryfontColor),
                   tooltip: "Add Image",
                   onPressed: () {
                     showModalBottomSheet(
                       context: context,
-                      backgroundColor: AppColors.white,
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.vertical(
-                          top: Radius.circular(20),
-                        ),
-                      ),
+                      backgroundColor: AppColors.backgroundColor,
+                      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
                       builder:
                           (_) => SafeArea(
                             child: Padding(
-                              padding: const EdgeInsets.fromLTRB(
-                                20,
-                                20,
-                                20,
-                                30,
-                              ),
+                              padding: const EdgeInsets.fromLTRB(20, 20, 20, 30),
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   ListTile(
-                                    leading: Icon(
-                                      Icons.photo_camera,
-                                      color: AppColors.grey,
-                                    ),
-                                    title: const Text(
-                                      "Take Photo",
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                    textColor: AppColors.black,
+                                    leading: Icon(Icons.photo_camera, color: AppColors.secondaryfontColor),
+                                    title: const Text("Take Photo", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+                                    textColor: AppColors.primaryfontColor,
                                     onTap: () {
                                       Navigator.pop(context);
                                       _pickImage(ImageSource.camera);
@@ -318,18 +242,9 @@ class _NoteFormPageState extends State<NoteFormPage> {
                                   ),
                                   const SizedBox(height: 12),
                                   ListTile(
-                                    leading: Icon(
-                                      Icons.photo_library,
-                                      color: AppColors.grey,
-                                    ),
-                                    title: const Text(
-                                      "Choose from Gallery",
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                    textColor: AppColors.black,
+                                    leading: Icon(Icons.photo_library, color: AppColors.secondaryfontColor),
+                                    title: const Text("Choose from Gallery", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+                                    textColor: AppColors.primaryfontColor,
                                     onTap: () {
                                       Navigator.pop(context);
                                       _pickImage(ImageSource.gallery);
@@ -347,7 +262,7 @@ class _NoteFormPageState extends State<NoteFormPage> {
                     padding: const EdgeInsets.only(left: 8.0),
                     child: TextButton(
                       style: TextButton.styleFrom(
-                        backgroundColor: AppColors.grey,
+                        backgroundColor: AppColors.secondaryfontColor,
                         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       ),
@@ -355,10 +270,7 @@ class _NoteFormPageState extends State<NoteFormPage> {
                         setState(() => _showSave = true);
                         _titleFocusNode.requestFocus();
                       },
-                      child: const Text(
-                        'Edit note',
-                        style: TextStyle(color: AppColors.white, fontWeight: FontWeight.bold),
-                      ),
+                      child: const Text('Edit note', style: TextStyle(color: AppColors.backgroundColor, fontWeight: FontWeight.bold)),
                     ),
                   ),
                 if (_showSave)
@@ -366,15 +278,12 @@ class _NoteFormPageState extends State<NoteFormPage> {
                     padding: const EdgeInsets.only(left: 8.0),
                     child: TextButton(
                       style: TextButton.styleFrom(
-                        backgroundColor: AppColors.grey,
+                        backgroundColor: AppColors.secondaryfontColor,
                         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       ),
                       onPressed: _saveNote,
-                      child: const Text(
-                        'Save note',
-                        style: TextStyle(color: AppColors.white, fontWeight: FontWeight.bold),
-                      ),
+                      child: const Text('Save note', style: TextStyle(color: AppColors.backgroundColor, fontWeight: FontWeight.bold)),
                     ),
                   ),
                 const SizedBox(width: 16),
@@ -388,7 +297,6 @@ class _NoteFormPageState extends State<NoteFormPage> {
         child:
             _showSave
                 ? Column(
-                
                   children: [
                     TextField(
                       controller: _titleController,
@@ -399,12 +307,12 @@ class _NoteFormPageState extends State<NoteFormPage> {
                         isCollapsed: true,
                         contentPadding: EdgeInsets.only(top: 8, bottom: 12),
                       ),
-                      style: const TextStyle(fontSize: 28.0, fontWeight: FontWeight.bold, color: AppColors.black),
+                      style: const TextStyle(fontSize: 28.0, fontWeight: FontWeight.bold, color: AppColors.primaryfontColor),
                       maxLines: null,
                       keyboardType: TextInputType.multiline,
                       textCapitalization: TextCapitalization.sentences,
                       autofocus: _autofocusTitle,
-                      cursorColor: AppColors.black,
+                      cursorColor: AppColors.primaryfontColor,
                       textInputAction: TextInputAction.next,
                       onSubmitted: (_) => FocusScope.of(context).requestFocus(_contentFocusNode),
                     ),
@@ -418,15 +326,10 @@ class _NoteFormPageState extends State<NoteFormPage> {
                           isCollapsed: true,
                           contentPadding: EdgeInsets.only(top: 4),
                         ),
-                        style: const TextStyle(
-                          fontSize: 16,
-                          color: AppColors.black,
-                          fontWeight: FontWeight.w500,
-                          height: 1.5,
-                        ),
+                        style: const TextStyle(fontSize: 16, color: AppColors.primaryfontColor, fontWeight: FontWeight.w500, height: 1.5),
                         maxLines: null,
                         keyboardType: TextInputType.multiline,
-                        cursorColor: AppColors.black,
+                        cursorColor: AppColors.primaryfontColor,
                         scrollPhysics: const BouncingScrollPhysics(),
                       ),
                     ),
@@ -438,20 +341,14 @@ class _NoteFormPageState extends State<NoteFormPage> {
                           child: ListView.separated(
                             scrollDirection: Axis.horizontal,
                             itemCount: _mediaData.length,
-                            separatorBuilder:
-                                (_, __) => const SizedBox(width: 8),
+                            separatorBuilder: (_, __) => const SizedBox(width: 8),
                             itemBuilder: (context, index) {
                               final bytes = _mediaData[index];
                               return Stack(
                                 children: [
                                   ClipRRect(
                                     borderRadius: BorderRadius.circular(12),
-                                    child: Image.memory(
-                                      bytes,
-                                      height: 100,
-                                      width: 100,
-                                      fit: BoxFit.cover,
-                                    ),
+                                    child: Image.memory(bytes, height: 100, width: 100, fit: BoxFit.cover),
                                   ),
                                   Positioned(
                                     top: 4,
@@ -463,16 +360,9 @@ class _NoteFormPageState extends State<NoteFormPage> {
                                         });
                                       },
                                       child: Container(
-                                        decoration: const BoxDecoration(
-                                          color: Colors.black54,
-                                          shape: BoxShape.circle,
-                                        ),
+                                        decoration: const BoxDecoration(color: AppColors.primaryfontColor, shape: BoxShape.circle),
                                         padding: const EdgeInsets.all(4),
-                                        child: const Icon(
-                                          Icons.close,
-                                          size: 16,
-                                          color: Colors.white,
-                                        ),
+                                        child: const Icon(Icons.close, size: 16, color: AppColors.backgroundColor),
                                       ),
                                     ),
                                   ),
@@ -487,7 +377,6 @@ class _NoteFormPageState extends State<NoteFormPage> {
                   ],
                 )
                 : SingleChildScrollView(
-                
                   physics: const BouncingScrollPhysics(),
                   padding: const EdgeInsets.only(bottom: 48),
                   child: Column(
@@ -503,13 +392,12 @@ class _NoteFormPageState extends State<NoteFormPage> {
                           isCollapsed: true,
                           contentPadding: EdgeInsets.only(top: 8, bottom: 12),
                         ),
-                        style: const TextStyle(fontSize: 28.0, fontWeight: FontWeight.bold, color: AppColors.black),
+                        style: const TextStyle(fontSize: 28.0, fontWeight: FontWeight.bold, color: AppColors.primaryfontColor),
                         maxLines: null,
-                        cursorColor: AppColors.black,
+                        cursorColor: AppColors.primaryfontColor,
                       ),
 
-                      if (_titleController.text.isNotEmpty && _contentController.text.isNotEmpty)
-                        const SizedBox(height: 4),
+                      if (_titleController.text.isNotEmpty && _contentController.text.isNotEmpty) const SizedBox(height: 4),
                       TextField(
                         controller: _contentController,
                         focusNode: _contentFocusNode,
@@ -520,17 +408,12 @@ class _NoteFormPageState extends State<NoteFormPage> {
                           isCollapsed: true,
                           contentPadding: EdgeInsets.only(top: 4),
                         ),
-                        style: const TextStyle(
-                          fontSize: 16,
-                          color: AppColors.black,
-                          height: 1.5,
-                        ),
+                        style: const TextStyle(fontSize: 16, color: AppColors.primaryfontColor, height: 1.5),
                         maxLines: null,
                         keyboardType: TextInputType.multiline,
-                        cursorColor: AppColors.black,
+                        cursorColor: AppColors.primaryfontColor,
                       ),
-                      if (_mediaData.isNotEmpty &&
-                          (_titleController.text.isNotEmpty || _contentController.text.isNotEmpty))
+                      if (_mediaData.isNotEmpty && (_titleController.text.isNotEmpty || _contentController.text.isNotEmpty))
                         const SizedBox(height: 12),
                       if (_mediaData.isNotEmpty && _titleController.text.isEmpty && _contentController.text.isEmpty)
                         const SizedBox(height: 4),
@@ -539,11 +422,7 @@ class _NoteFormPageState extends State<NoteFormPage> {
                           padding: const EdgeInsets.symmetric(vertical: 4),
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(12),
-                            child: Image.memory(
-                              bytes,
-                              width: double.infinity,
-                              fit: BoxFit.cover,
-                            ),
+                            child: Image.memory(bytes, width: double.infinity, fit: BoxFit.cover),
                           ),
                         ),
                       ],

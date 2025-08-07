@@ -11,31 +11,19 @@ class TrashPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final trashedNotes =
-        noteService
-            .getAllNotes()
-            .where((note) => note.category == 'trashed')
-            .toList()
-          ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+        noteService.getAllNotes().where((note) => note.category == 'trashed').toList()..sort((a, b) => b.createdAt.compareTo(a.createdAt));
 
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: AppColors.backgroundColor,
       appBar: AppBar(
-        backgroundColor: AppColors.white,
+        backgroundColor: AppColors.backgroundColor,
         elevation: 0,
-        iconTheme: const IconThemeData(color: AppColors.black),
-        title: const Text(
-          "Trash",
-          style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.black),
-        ),
+        iconTheme: const IconThemeData(color: AppColors.primaryfontColor),
+        title: const Text("Trash", style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.primaryfontColor)),
       ),
       body:
           trashedNotes.isEmpty
-              ? Center(
-                child: Text(
-                  "Trash is empty.",
-                  style: TextStyle(color: AppColors.black.withOpacity(0.45)),
-                ),
-              )
+              ? Center(child: Text("Trash is empty.", style: TextStyle(color: AppColors.primaryfontColor.withOpacity(0.45))))
               : ListView.builder(
                 padding: const EdgeInsets.only(bottom: 80),
                 itemCount: trashedNotes.length,
@@ -45,19 +33,16 @@ class TrashPage extends StatelessWidget {
                     key: Key(note.id),
                     direction: DismissDirection.horizontal,
                     background: Container(
-                      color: AppColors.green,
+                      color: AppColors.successColor,
                       alignment: Alignment.centerLeft,
                       padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: const Icon(Icons.restore, color: AppColors.white),
+                      child: const Icon(Icons.restore, color: AppColors.backgroundColor),
                     ),
                     secondaryBackground: Container(
-                      color: AppColors.red,
+                      color: AppColors.warningColor,
                       alignment: Alignment.centerRight,
                       padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: const Icon(
-                        Icons.delete_forever,
-                        color: AppColors.white,
-                      ),
+                      child: const Icon(Icons.delete_forever, color: AppColors.backgroundColor),
                     ),
                     confirmDismiss: (direction) async {
                       if (direction == DismissDirection.startToEnd) {
@@ -66,20 +51,15 @@ class TrashPage extends StatelessWidget {
                           SnackBar(
                             content: Row(
                               children: const [
-                                Icon(Icons.restore, color: AppColors.white),
+                                Icon(Icons.restore, color: AppColors.backgroundColor),
                                 SizedBox(width: 12),
-                                Expanded(child: Text("Note restored")),
+                                Expanded(child: Text("Note restowarningColor")),
                               ],
                             ),
-                            backgroundColor: AppColors.green,
+                            backgroundColor: AppColors.successColor,
                             behavior: SnackBarBehavior.floating,
-                            margin: const EdgeInsets.symmetric(
-                              horizontal: 20,
-                              vertical: 10,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
+                            margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                             duration: const Duration(seconds: 2),
                           ),
                         );
@@ -89,42 +69,29 @@ class TrashPage extends StatelessWidget {
                           context: context,
                           builder:
                               (ctx) => AlertDialog(
-                                backgroundColor: AppColors.white,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
+                                backgroundColor: AppColors.backgroundColor,
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                                 title: const Text(
                                   "Delete permanently?",
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: AppColors.black,
-                                  ),
+                                  style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.primaryfontColor),
                                 ),
                                 content: const Text(
                                   "This note will be deleted forever.",
-                                  style: TextStyle(color: AppColors.black),
+                                  style: TextStyle(color: AppColors.primaryfontColor),
                                 ),
-                                actionsPadding: const EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                  vertical: 8,
-                                ),
+                                actionsPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                                 actions: [
                                   TextButton(
                                     onPressed: () => Navigator.pop(ctx, false),
-                                    style: TextButton.styleFrom(
-                                      foregroundColor: AppColors.black
-                                          .withOpacity(0.7),
-                                    ),
+                                    style: TextButton.styleFrom(foregroundColor: AppColors.primaryfontColor.withOpacity(0.7)),
                                     child: const Text("Cancel"),
                                   ),
                                   ElevatedButton(
                                     onPressed: () => Navigator.pop(ctx, true),
                                     style: ElevatedButton.styleFrom(
-                                      backgroundColor: AppColors.red,
-                                      foregroundColor: AppColors.white,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
+                                      backgroundColor: AppColors.warningColor,
+                                      foregroundColor: AppColors.backgroundColor,
+                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                                     ),
                                     child: const Text("Delete"),
                                   ),
@@ -137,25 +104,15 @@ class TrashPage extends StatelessWidget {
                             SnackBar(
                               content: Row(
                                 children: const [
-                                  Icon(
-                                    Icons.delete_forever,
-                                    color: AppColors.white,
-                                  ),
+                                  Icon(Icons.delete_forever, color: AppColors.backgroundColor),
                                   SizedBox(width: 12),
-                                  Expanded(
-                                    child: Text("Note deleted permanently"),
-                                  ),
+                                  Expanded(child: Text("Note deleted permanently")),
                                 ],
                               ),
-                              backgroundColor: AppColors.red,
+                              backgroundColor: AppColors.warningColor,
                               behavior: SnackBarBehavior.floating,
-                              margin: const EdgeInsets.symmetric(
-                                horizontal: 20,
-                                vertical: 10,
-                              ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
+                              margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                               duration: const Duration(seconds: 2),
                             ),
                           );

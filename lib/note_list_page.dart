@@ -82,41 +82,31 @@ class _NoteListPageState extends State<NoteListPage> {
     cats = LinkedHashSet<String>.from(cats).toList();
 
     return cats.map((cat) {
-      return PopupMenuItem<String>(
-        value: cat,
-        child: Text(
-          cat,
-          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
-        ),
-      );
+      return PopupMenuItem<String>(value: cat, child: Text(cat, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500)));
     }).toList();
   }
 
   @override
   Widget build(BuildContext context) {
-    final byCategory =
-        _selectedCategory == 'All'
-            ? _allNotes
-            : _allNotes.where((note) => note.category == _selectedCategory);
+    final byCategory = _selectedCategory == 'All' ? _allNotes : _allNotes.where((note) => note.category == _selectedCategory);
 
     final filteredNotes =
         byCategory.where((note) {
             final q = _searchQuery.toLowerCase();
-            return note.title.toLowerCase().contains(q) ||
-                note.content.toLowerCase().contains(q);
+            return note.title.toLowerCase().contains(q) || note.content.toLowerCase().contains(q);
           }).toList()
           ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
 
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: AppColors.backgroundColor,
       appBar: AppBar(
-        backgroundColor: AppColors.white,
+        backgroundColor: AppColors.backgroundColor,
         elevation: 0,
-        iconTheme: const IconThemeData(color: AppColors.black),
+        iconTheme: const IconThemeData(color: AppColors.primaryfontColor),
         title: PopupMenuButton<String>(
           initialValue: _selectedCategory,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          color: AppColors.white,
+          color: AppColors.backgroundColor,
           elevation: 8,
           tooltip: 'Select Category',
           onSelected: (value) {
@@ -131,18 +121,17 @@ class _NoteListPageState extends State<NoteListPage> {
             children: [
               Text(
                 _selectedCategory == 'All' ? 'All Notes' : _selectedCategory,
-                style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.black,
-                ),
+                style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.primaryfontColor),
               ),
               const SizedBox(width: 4),
-              const Icon(Icons.arrow_drop_down, color: AppColors.black),
+              const Icon(Icons.arrow_drop_down, color: AppColors.primaryfontColor),
             ],
           ),
         ),
         actions: [
           TextButton(
             style: TextButton.styleFrom(
-              backgroundColor: AppColors.grey,
+              backgroundColor: AppColors.secondaryfontColor,
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             ),
@@ -163,7 +152,7 @@ class _NoteListPageState extends State<NoteListPage> {
                 _saveSelectedCategory('All');
               }
             },
-            child: const Text('New note', style: TextStyle(color: AppColors.white, fontWeight: FontWeight.bold)),
+            child: const Text('New note', style: TextStyle(color: AppColors.backgroundColor, fontWeight: FontWeight.bold)),
           ),
           const SizedBox(width: 16),
         ],
@@ -179,40 +168,36 @@ class _NoteListPageState extends State<NoteListPage> {
                     controller: _searchController,
                     decoration: InputDecoration(
                       hintText: 'Search notes...',
-                      prefixIcon: const Icon(Icons.search, color: AppColors.black),
+                      prefixIcon: const Icon(Icons.search, color: AppColors.primaryfontColor),
                       filled: true,
-                      fillColor: AppColors.grey.withOpacity(0.05),
+                      fillColor: AppColors.secondaryfontColor.withOpacity(0.05),
                       contentPadding: const EdgeInsets.symmetric(vertical: 0),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide(color: AppColors.grey),
+                        borderSide: BorderSide(color: AppColors.secondaryfontColor),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide(color: AppColors.grey),
+                        borderSide: BorderSide(color: AppColors.secondaryfontColor),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide(color: AppColors.grey, width: 2),
+                        borderSide: BorderSide(color: AppColors.secondaryfontColor, width: 2),
                       ),
                     ),
-                    style: const TextStyle(color: AppColors.black),
+                    style: const TextStyle(color: AppColors.primaryfontColor),
                   ),
                 ),
                 const SizedBox(width: 8),
                 IconButton(
                   icon: const Icon(Icons.delete_outline),
-                  color: AppColors.black,
+                  color: AppColors.primaryfontColor,
                   iconSize: 24.0,
                   padding: const EdgeInsets.all(0),
                   constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
                   splashRadius: 20,
                   tooltip: 'Open Trash',
-                  onPressed:
-                      () => Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (_) => TrashPage(noteService: widget.noteService)),
-                      ),
+                  onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => TrashPage(noteService: widget.noteService))),
                 ),
               ],
             ),
@@ -220,14 +205,7 @@ class _NoteListPageState extends State<NoteListPage> {
           Expanded(
             child:
                 filteredNotes.isEmpty
-                    ? Center(
-                      child: Text(
-                        "No notes found.",
-                        style: TextStyle(
-                          color: AppColors.black.withOpacity(0.45),
-                        ),
-                      ),
-                    )
+                    ? Center(child: Text("No notes found.", style: TextStyle(color: AppColors.primaryfontColor.withOpacity(0.45))))
                     : ListView.builder(
                       padding: const EdgeInsets.only(top: 0, bottom: 80),
                       itemCount: filteredNotes.length,
@@ -240,11 +218,8 @@ class _NoteListPageState extends State<NoteListPage> {
                           secondaryBackground: Container(
                             alignment: Alignment.centerRight,
                             padding: const EdgeInsets.symmetric(horizontal: 20),
-                            color: AppColors.red,
-                            child: const Icon(
-                              Icons.delete,
-                              color: AppColors.white,
-                            ),
+                            color: AppColors.warningColor,
+                            child: const Icon(Icons.delete, color: AppColors.backgroundColor),
                           ),
                           movementDuration: const Duration(milliseconds: 250),
                           resizeDuration: const Duration(milliseconds: 200),
@@ -253,46 +228,29 @@ class _NoteListPageState extends State<NoteListPage> {
                               context: context,
                               builder:
                                   (ctx) => AlertDialog(
-                                    backgroundColor: AppColors.white,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(20),
-                                    ),
+                                    backgroundColor: AppColors.backgroundColor,
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                                     title: const Text(
                                       "Move to trash?",
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        color: AppColors.black,
-                                      ),
+                                      style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.primaryfontColor),
                                     ),
                                     content: const Text(
                                       "This note will be moved to trash.",
-                                      style: TextStyle(color: AppColors.black),
+                                      style: TextStyle(color: AppColors.primaryfontColor),
                                     ),
-                                    actionsPadding: const EdgeInsets.symmetric(
-                                      horizontal: 16,
-                                      vertical: 8,
-                                    ),
+                                    actionsPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                                     actions: [
                                       TextButton(
-                                        onPressed:
-                                            () => Navigator.pop(ctx, false),
-                                        style: TextButton.styleFrom(
-                                          foregroundColor: AppColors.black
-                                              .withOpacity(0.7),
-                                        ),
+                                        onPressed: () => Navigator.pop(ctx, false),
+                                        style: TextButton.styleFrom(foregroundColor: AppColors.primaryfontColor.withOpacity(0.7)),
                                         child: const Text("Cancel"),
                                       ),
                                       ElevatedButton(
-                                        onPressed:
-                                            () => Navigator.pop(ctx, true),
+                                        onPressed: () => Navigator.pop(ctx, true),
                                         style: ElevatedButton.styleFrom(
-                                          backgroundColor: AppColors.red,
-                                          foregroundColor: AppColors.white,
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(
-                                              10,
-                                            ),
-                                          ),
+                                          backgroundColor: AppColors.warningColor,
+                                          foregroundColor: AppColors.backgroundColor,
+                                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                                         ),
                                         child: const Text("Trash"),
                                       ),
@@ -306,47 +264,32 @@ class _NoteListPageState extends State<NoteListPage> {
                               SnackBar(
                                 content: Row(
                                   children: const [
-                                    Icon(
-                                      Icons.delete_outline,
-                                      color: AppColors.white,
-                                    ),
+                                    Icon(Icons.delete_outline, color: AppColors.backgroundColor),
                                     SizedBox(width: 12),
-                                    Expanded(
-                                      child: Text("Note moved to trash"),
-                                    ),
+                                    Expanded(child: Text("Note moved to trash")),
                                   ],
                                 ),
-                                backgroundColor: AppColors.grey,
+                                backgroundColor: AppColors.secondaryfontColor,
                                 behavior: SnackBarBehavior.floating,
-                                margin: const EdgeInsets.symmetric(
-                                  horizontal: 20,
-                                  vertical: 10,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
+                                margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                                 duration: const Duration(seconds: 2),
                               ),
                             );
                           },
                           child: GestureDetector(
                             onTap: () async {
-                              final updatedNote =
-                                  await Navigator.push<NoteItem>(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder:
-                                          (_) => NoteFormPage(
-                                            existingCategories:
-                                                _getAllCategories(),
-                                            initialNote: note,
-                                            initialCategory:
-                                                note.category != 'All'
-                                                    ? note.category
-                                                    : null,
-                                          ),
-                                    ),
-                                  );
+                              final updatedNote = await Navigator.push<NoteItem>(
+                                context,
+                                MaterialPageRoute(
+                                  builder:
+                                      (_) => NoteFormPage(
+                                        existingCategories: _getAllCategories(),
+                                        initialNote: note,
+                                        initialCategory: note.category != 'All' ? note.category : null,
+                                      ),
+                                ),
+                              );
                               if (updatedNote != null) {
                                 widget.noteService.updateNote(updatedNote);
                               }
