@@ -188,7 +188,7 @@ class _NoteFormPageState extends State<NoteFormPage> {
                 PopupMenuButton<String>(
                   initialValue: _selectedCategory,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                  color: AppColors.backgroundColor,
+                  color: AppColors.secondaryfontColor,
                   elevation: 8,
                   icon: const Icon(Icons.category_outlined, color: AppColors.primaryfontColor),
                   tooltip: "Select Category",
