@@ -257,35 +257,31 @@ class _NoteFormPageState extends State<NoteFormPage> {
                     );
                   },
                 ),
-                if (!_showSave)
-                  Padding(
-                    padding: const EdgeInsets.only(left: 8.0),
+                Padding(
+                  padding: const EdgeInsets.only(left: 8.0),
+                  child: SizedBox(
+                    width: 100,
                     child: TextButton(
                       style: TextButton.styleFrom(
                         backgroundColor: AppColors.secondaryfontColor,
                         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
                       ),
                       onPressed: () {
-                        setState(() => _showSave = true);
-                        _titleFocusNode.requestFocus();
+                        setState(() => _showSave = !_showSave);
+                        if (!_showSave) {
+                          _saveNote();
+                        } else {
+                          _titleFocusNode.requestFocus();
+                        }
                       },
-                      child: const Text('Edit note', style: TextStyle(color: AppColors.backgroundColor, fontWeight: FontWeight.bold)),
-                    ),
-                  ),
-                if (_showSave)
-                  Padding(
-                    padding: const EdgeInsets.only(left: 8.0),
-                    child: TextButton(
-                      style: TextButton.styleFrom(
-                        backgroundColor: AppColors.secondaryfontColor,
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      child: Text(
+                        _showSave ? 'Save note' : 'Edit note',
+                        style: const TextStyle(color: AppColors.backgroundColor, fontWeight: FontWeight.bold),
                       ),
-                      onPressed: _saveNote,
-                      child: const Text('Save note', style: TextStyle(color: AppColors.backgroundColor, fontWeight: FontWeight.bold)),
                     ),
                   ),
+                ),
                 const SizedBox(width: 16),
               ],
             );

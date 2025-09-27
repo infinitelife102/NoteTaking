@@ -47,22 +47,7 @@ class TrashPage extends StatelessWidget {
                     confirmDismiss: (direction) async {
                       if (direction == DismissDirection.startToEnd) {
                         noteService.restoreFromTrash(note);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Row(
-                              children: const [
-                                Icon(Icons.restore, color: AppColors.backgroundColor),
-                                SizedBox(width: 12),
-                                Expanded(child: Text("Note restowarningColor")),
-                              ],
-                            ),
-                            backgroundColor: AppColors.successColor,
-                            behavior: SnackBarBehavior.floating,
-                            margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                            duration: const Duration(seconds: 2),
-                          ),
-                        );
+
                         return true;
                       } else if (direction == DismissDirection.endToStart) {
                         final confirm = await showDialog<bool>(
@@ -100,22 +85,7 @@ class TrashPage extends StatelessWidget {
                         );
                         if (confirm == true) {
                           noteService.deletePermanently(note.id);
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Row(
-                                children: const [
-                                  Icon(Icons.delete_forever, color: AppColors.backgroundColor),
-                                  SizedBox(width: 12),
-                                  Expanded(child: Text("Note deleted permanently")),
-                                ],
-                              ),
-                              backgroundColor: AppColors.warningColor,
-                              behavior: SnackBarBehavior.floating,
-                              margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                              duration: const Duration(seconds: 2),
-                            ),
-                          );
+
                           return true;
                         }
                       }

@@ -18,7 +18,7 @@ class NoteTile extends StatelessWidget {
       color: hasMedia ? Colors.transparent : AppColors.secondaryfontColor,
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       elevation: 1.5,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
       clipBehavior: hasMedia ? Clip.antiAlias : Clip.none,
       child:
           hasMedia
