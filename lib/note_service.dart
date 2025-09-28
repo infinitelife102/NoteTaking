@@ -9,9 +9,7 @@ class NoteService {
   static const String boxName = 'notesBox';
   static const String secureKeyName = 'hiveEncryptionKey';
 
-  final _noteController = StreamController<List<NoteItem>>.broadcast(
-    sync: true,
-  );
+  final _noteController = StreamController<List<NoteItem>>.broadcast(sync: true);
   late Box<NoteItem> _box;
   final _secureStorage = const FlutterSecureStorage();
 
@@ -19,11 +17,7 @@ class NoteService {
 
   Future<void> init() async {
     final encryptionKey = await _getOrCreateEncryptionKey();
-    _box = await Hive.openBox<NoteItem>(
-      boxName,
-      encryptionCipher: HiveAesCipher(encryptionKey),
-    );
-    await cleanOldTrash();
+    _box = await Hive.openBox<NoteItem>(boxName, encryptionCipher: HiveAesCipher(encryptionKey));
     _noteController.add(_box.values.toList());
   }
 
@@ -80,20 +74,6 @@ class NoteService {
 
   void deletePermanently(String id) {
     _box.delete(id);
-    _noteController.add(_box.values.toList());
-  }
-
-  Future<void> cleanOldTrash() async {
-    final now = DateTime.now();
-    final toDelete =
-        _box.values.where((note) {
-          return note.category == 'trashed' &&
-              now.difference(note.createdAt).inDays >= 30;
-        }).toList();
-
-    for (final note in toDelete) {
-      await _box.delete(note.id);
-    }
     _noteController.add(_box.values.toList());
   }
 
