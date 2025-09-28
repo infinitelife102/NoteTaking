@@ -100,10 +100,7 @@ class _NoteListPageState extends State<NoteListPage> with TickerProviderStateMix
 
               Padding(
                 padding: const EdgeInsets.all(20),
-                child: Text(
-                  'Select Category',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.primaryfontColor),
-                ),
+                child: Text('Categories', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.primaryfontColor)),
               ),
 
               ...['All', ..._getAllCategories()].map((category) {
@@ -149,6 +146,7 @@ class _NoteListPageState extends State<NoteListPage> with TickerProviderStateMix
               }).toList(),
 
               const SizedBox(height: 20),
+              SizedBox(height: MediaQuery.of(context).viewInsets.bottom + 40),
             ],
           ),
         );

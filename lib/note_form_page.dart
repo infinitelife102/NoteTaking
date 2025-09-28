@@ -93,7 +93,7 @@ class _NoteFormPageState extends State<NoteFormPage> {
         final controller = TextEditingController();
         return AlertDialog(
           backgroundColor: AppColors.backgroundColor,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
           title: const Text("Create new category", style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.primaryfontColor)),
           content: TextField(
             controller: controller,
@@ -104,11 +104,11 @@ class _NoteFormPageState extends State<NoteFormPage> {
               hintStyle: TextStyle(color: AppColors.primaryfontColor.withOpacity(0.4)),
               enabledBorder: OutlineInputBorder(
                 borderSide: BorderSide(color: AppColors.secondaryfontColor),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(25),
               ),
               focusedBorder: OutlineInputBorder(
                 borderSide: BorderSide(color: AppColors.secondaryfontColor, width: 2),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(25),
               ),
               filled: true,
               fillColor: AppColors.secondaryfontColor.withOpacity(0.05),
@@ -126,7 +126,7 @@ class _NoteFormPageState extends State<NoteFormPage> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.secondaryfontColor,
                 foregroundColor: AppColors.backgroundColor,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
               ),
               child: const Text("Add"),
             ),
@@ -233,7 +233,7 @@ class _NoteFormPageState extends State<NoteFormPage> {
                                 children: [
                                   ListTile(
                                     leading: Icon(Icons.photo_camera, color: AppColors.secondaryfontColor),
-                                    title: const Text("Take Photo", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+                                    title: const Text("Take photo", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
                                     textColor: AppColors.primaryfontColor,
                                     onTap: () {
                                       Navigator.pop(context);
@@ -243,7 +243,7 @@ class _NoteFormPageState extends State<NoteFormPage> {
                                   const SizedBox(height: 12),
                                   ListTile(
                                     leading: Icon(Icons.photo_library, color: AppColors.secondaryfontColor),
-                                    title: const Text("Choose from Gallery", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+                                    title: const Text("Choose from gallery", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
                                     textColor: AppColors.primaryfontColor,
                                     onTap: () {
                                       Navigator.pop(context);

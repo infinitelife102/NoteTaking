@@ -55,7 +55,7 @@ class TrashPage extends StatelessWidget {
                           builder:
                               (ctx) => AlertDialog(
                                 backgroundColor: AppColors.backgroundColor,
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
                                 title: const Text(
                                   "Delete permanently?",
                                   style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.primaryfontColor),
@@ -76,7 +76,7 @@ class TrashPage extends StatelessWidget {
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: AppColors.warningColor,
                                       foregroundColor: AppColors.backgroundColor,
-                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
                                     ),
                                     child: const Text("Delete"),
                                   ),
