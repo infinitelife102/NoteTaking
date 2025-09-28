@@ -351,32 +351,6 @@ class _NoteListPageState extends State<NoteListPage> with TickerProviderStateMix
             },
             onDismissed: (_) {
               widget.noteService.moveToTrash(note);
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Row(
-                    children: const [
-                      Icon(Icons.delete_outline, color: AppColors.backgroundColor),
-                      SizedBox(width: 12),
-                      Expanded(child: Text("Note moved to trash")),
-                    ],
-                  ),
-                  backgroundColor: AppColors.secondaryfontColor,
-                  behavior: SnackBarBehavior.fixed,
-                  width: MediaQuery.of(context).size.width,
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-                  margin: EdgeInsets.zero,
-                  elevation: 0,
-                  shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-                  duration: const Duration(seconds: 2),
-                  action: SnackBarAction(
-                    label: 'Undo',
-                    textColor: AppColors.backgroundColor,
-                    onPressed: () {
-                      widget.noteService.restoreFromTrash(note);
-                    },
-                  ),
-                ),
-              );
             },
             child: GestureDetector(
               onTap: () async {
