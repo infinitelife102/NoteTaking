@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'note_service.dart';
 import 'note_tile.dart';
 import 'theme.dart';
@@ -36,13 +37,13 @@ class TrashPage extends StatelessWidget {
                       color: AppColors.successColor,
                       alignment: Alignment.centerLeft,
                       padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: const Icon(Icons.restore, color: AppColors.backgroundColor),
+                      child: const Icon(CupertinoIcons.refresh_circled, color: AppColors.backgroundColor),
                     ),
                     secondaryBackground: Container(
                       color: AppColors.warningColor,
                       alignment: Alignment.centerRight,
                       padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: const Icon(Icons.delete_forever, color: AppColors.backgroundColor),
+                      child: const Icon(CupertinoIcons.delete_solid, color: AppColors.backgroundColor),
                     ),
                     confirmDismiss: (direction) async {
                       if (direction == DismissDirection.startToEnd) {

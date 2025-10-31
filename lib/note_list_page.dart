@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'note_form_page.dart';
 import 'note_tile.dart';
@@ -172,11 +173,11 @@ class _NoteListPageState extends State<NoteListPage> with TickerProviderStateMix
               decoration: InputDecoration(
                 hintText: 'Search notes...',
                 hintStyle: TextStyle(color: AppColors.backgroundColor.withOpacity(0.7)),
-                prefixIcon: const Icon(Icons.search, color: AppColors.backgroundColor),
+                prefixIcon: const Icon(CupertinoIcons.search, color: AppColors.backgroundColor),
                 suffixIcon:
                     _searchQuery.isNotEmpty
                         ? IconButton(
-                          icon: const Icon(Icons.close),
+                          icon: const Icon(CupertinoIcons.clear_thick_circled),
                           color: AppColors.backgroundColor,
                           onPressed: () => _searchController.clear(),
                         )
@@ -207,8 +208,8 @@ class _NoteListPageState extends State<NoteListPage> with TickerProviderStateMix
                   decoration: BoxDecoration(color: AppColors.backgroundColor.withOpacity(0.15), borderRadius: BorderRadius.circular(25)),
                   child: IconButton(
                     onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => TrashPage(noteService: widget.noteService))),
-                    icon: const Icon(Icons.delete_outline, color: AppColors.backgroundColor),
-                    iconSize: 24,
+                    icon: const Icon(CupertinoIcons.delete, color: AppColors.backgroundColor),
+                    iconSize: 20,
                   ),
                 ),
 
@@ -241,7 +242,7 @@ class _NoteListPageState extends State<NoteListPage> with TickerProviderStateMix
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
-                          const Icon(Icons.keyboard_arrow_up, color: AppColors.backgroundColor, size: 18),
+                          const Icon(CupertinoIcons.chevron_up, color: AppColors.backgroundColor, size: 18),
                         ],
                       ),
                     ),
@@ -277,7 +278,7 @@ class _NoteListPageState extends State<NoteListPage> with TickerProviderStateMix
                       mainAxisSize: MainAxisSize.min,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.add, color: AppColors.secondaryfontColor, size: 18),
+                        Icon(CupertinoIcons.add, color: AppColors.secondaryfontColor, size: 18),
                         const SizedBox(width: 8),
                         Text(
                           'New note',
@@ -316,7 +317,7 @@ class _NoteListPageState extends State<NoteListPage> with TickerProviderStateMix
               padding: const EdgeInsets.symmetric(horizontal: 20),
               margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(color: AppColors.warningColor, borderRadius: BorderRadius.circular(12)),
-              child: const Icon(Icons.delete, color: AppColors.backgroundColor),
+              child: const Icon(CupertinoIcons.delete, color: AppColors.backgroundColor),
             ),
             movementDuration: const Duration(milliseconds: 250),
             resizeDuration: const Duration(milliseconds: 200),
@@ -418,7 +419,7 @@ class _NoteListPageState extends State<NoteListPage> with TickerProviderStateMix
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(
-                            _searchQuery.isNotEmpty ? Icons.search_off : Icons.note_add_outlined,
+                            _searchQuery.isNotEmpty ? CupertinoIcons.search : CupertinoIcons.doc_text,
                             size: 64,
                             color: AppColors.primaryfontColor.withOpacity(0.3),
                           ),

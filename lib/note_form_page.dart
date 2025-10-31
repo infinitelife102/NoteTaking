@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:uuid/uuid.dart';
 import 'models/note_item.dart';
@@ -195,7 +196,7 @@ class _NoteFormPageState extends State<NoteFormPage> {
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   color: AppColors.secondaryfontColor,
                   elevation: 8,
-                  icon: const Icon(Icons.category_outlined, color: AppColors.primaryfontColor),
+                  icon: const Icon(CupertinoIcons.tag, color: AppColors.primaryfontColor),
                   tooltip: "Select Category",
                   onSelected: (value) async {
                     if (value == 'New Category') {
@@ -221,8 +222,9 @@ class _NoteFormPageState extends State<NoteFormPage> {
                         ),
                       ],
                 ),
+                const SizedBox(width: 16),
                 IconButton(
-                  icon: const Icon(Icons.add_photo_alternate_outlined, color: AppColors.primaryfontColor),
+                  icon: const Icon(CupertinoIcons.photo_camera, color: AppColors.primaryfontColor),
                   tooltip: "Add Image",
                   onPressed: () {
                     showModalBottomSheet(
@@ -237,7 +239,7 @@ class _NoteFormPageState extends State<NoteFormPage> {
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   ListTile(
-                                    leading: Icon(Icons.photo_camera, color: AppColors.secondaryfontColor),
+                                    leading: Icon(CupertinoIcons.camera, color: AppColors.secondaryfontColor),
                                     title: const Text("Take photo", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
                                     textColor: AppColors.primaryfontColor,
                                     onTap: () {
@@ -247,7 +249,7 @@ class _NoteFormPageState extends State<NoteFormPage> {
                                   ),
                                   const SizedBox(height: 12),
                                   ListTile(
-                                    leading: Icon(Icons.photo_library, color: AppColors.secondaryfontColor),
+                                    leading: Icon(CupertinoIcons.photo_on_rectangle, color: AppColors.secondaryfontColor),
                                     title: const Text("Choose from gallery", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
                                     textColor: AppColors.primaryfontColor,
                                     onTap: () {
@@ -342,7 +344,7 @@ class _NoteFormPageState extends State<NoteFormPage> {
                                 child: Container(
                                   decoration: const BoxDecoration(color: AppColors.primaryfontColor, shape: BoxShape.circle),
                                   padding: const EdgeInsets.all(4),
-                                  child: const Icon(Icons.close, size: 16, color: AppColors.backgroundColor),
+                                  child: const Icon(CupertinoIcons.clear, size: 16, color: AppColors.backgroundColor),
                                 ),
                               ),
                             ),
