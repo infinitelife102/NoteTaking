@@ -27,8 +27,7 @@ class _NoteFormPageState extends State<NoteFormPage> {
   final _uuid = const Uuid();
 
   String _selectedCategory = '';
-  bool _autofocusTitle = true;
-  bool _showSave = false;
+  bool _hasChanges = false;
 
   @override
   void initState() {
@@ -39,12 +38,8 @@ class _NoteFormPageState extends State<NoteFormPage> {
       _contentController.text = note.content;
       _selectedCategory = note.category;
       _mediaData.addAll(note.mediaData);
-      _autofocusTitle = false;
-      _showSave = false;
     } else {
       _selectedCategory = widget.initialCategory ?? (widget.existingCategories.isNotEmpty ? widget.existingCategories.first : 'General');
-      _autofocusTitle = true;
-      _showSave = true;
     }
 
     _titleFocusNode.addListener(_handleFocusChange);
@@ -54,14 +49,16 @@ class _NoteFormPageState extends State<NoteFormPage> {
   }
 
   void _handleFocusChange() {
-    if ((_titleFocusNode.hasFocus || _contentFocusNode.hasFocus) && !_showSave) {
-      setState(() => _showSave = true);
-    }
+    _markChanged();
   }
 
   void _handleTextChange() {
-    if (!_showSave) {
-      setState(() => _showSave = true);
+    _markChanged();
+  }
+
+  void _markChanged() {
+    if (!_hasChanges) {
+      setState(() => _hasChanges = true);
     }
   }
 
@@ -80,7 +77,7 @@ class _NoteFormPageState extends State<NoteFormPage> {
       final bytes = await File(picked.path).readAsBytes();
       setState(() {
         _mediaData.add(bytes);
-        _showSave = true;
+        _hasChanges = true;
       });
     }
   }
@@ -157,6 +154,14 @@ class _NoteFormPageState extends State<NoteFormPage> {
     );
 
     Navigator.pop(context, note);
+  }
+
+  void _autoSave() {
+    if (_hasChanges) {
+      _saveNote();
+    } else {
+      Navigator.pop(context);
+    }
   }
 
   @override
@@ -257,170 +262,101 @@ class _NoteFormPageState extends State<NoteFormPage> {
                     );
                   },
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 8.0),
-                  child: SizedBox(
-                    width: 100,
-                    child: TextButton(
-                      style: TextButton.styleFrom(
-                        backgroundColor: AppColors.secondaryfontColor,
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
-                      ),
-                      onPressed: () {
-                        setState(() => _showSave = !_showSave);
-                        if (!_showSave) {
-                          _saveNote();
-                        } else {
-                          _titleFocusNode.requestFocus();
-                        }
-                      },
-                      child: Text(
-                        _showSave ? 'Save note' : 'Edit note',
-                        style: const TextStyle(color: AppColors.backgroundColor, fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ),
-                ),
                 const SizedBox(width: 16),
               ],
             );
           },
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-        child:
-            _showSave
-                ? Column(
-                  children: [
-                    TextField(
-                      controller: _titleController,
-                      focusNode: _titleFocusNode,
-                      decoration: const InputDecoration(
-                        border: InputBorder.none,
-                        isCollapsed: true,
-                        contentPadding: EdgeInsets.only(top: 8, bottom: 12),
-                      ),
-                      style: const TextStyle(fontSize: 28.0, fontWeight: FontWeight.bold, color: AppColors.primaryfontColor),
-                      maxLines: null,
-                      keyboardType: TextInputType.multiline,
-                      textCapitalization: TextCapitalization.sentences,
-                      autofocus: _autofocusTitle,
-                      cursorColor: AppColors.primaryfontColor,
-                      textInputAction: TextInputAction.next,
-                      onSubmitted: (_) => FocusScope.of(context).requestFocus(_contentFocusNode),
+      body: PopScope(
+        canPop: false,
+        onPopInvoked: (bool didPop) {
+          if (!didPop) {
+            _autoSave();
+          }
+        },
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+          child: Column(
+            children: [
+              TextField(
+                controller: _titleController,
+                focusNode: _titleFocusNode,
+                decoration: const InputDecoration(
+                  border: InputBorder.none,
+                  isCollapsed: true,
+                  contentPadding: EdgeInsets.only(top: 8, bottom: 12),
+                ),
+                style: const TextStyle(fontSize: 28.0, fontWeight: FontWeight.bold, color: AppColors.primaryfontColor),
+                maxLines: null,
+                keyboardType: TextInputType.multiline,
+                textCapitalization: TextCapitalization.sentences,
+                cursorColor: AppColors.primaryfontColor,
+                textInputAction: TextInputAction.next,
+                onSubmitted: (_) => FocusScope.of(context).requestFocus(_contentFocusNode),
+                onTap: () {
+                  _titleController.selection = TextSelection.collapsed(offset: _titleController.text.length);
+                },
+              ),
+              Expanded(
+                child: TextField(
+                  controller: _contentController,
+                  focusNode: _contentFocusNode,
+                  decoration: const InputDecoration(border: InputBorder.none, isCollapsed: true, contentPadding: EdgeInsets.only(top: 4)),
+                  style: const TextStyle(fontSize: 16, color: AppColors.primaryfontColor, fontWeight: FontWeight.w500, height: 1.5),
+                  maxLines: null,
+                  keyboardType: TextInputType.multiline,
+                  cursorColor: AppColors.primaryfontColor,
+                  scrollPhysics: const BouncingScrollPhysics(),
+                  onTap: () {
+                    _contentController.selection = TextSelection.collapsed(offset: _contentController.text.length);
+                  },
+                ),
+              ),
+              if (_mediaData.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  child: SizedBox(
+                    height: 100,
+                    child: ListView.separated(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: _mediaData.length,
+                      separatorBuilder: (_, __) => const SizedBox(width: 8),
+                      itemBuilder: (context, index) {
+                        final bytes = _mediaData[index];
+                        return Stack(
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(12),
+                              child: Image.memory(bytes, height: 100, width: 100, fit: BoxFit.cover),
+                            ),
+                            Positioned(
+                              top: 4,
+                              right: 4,
+                              child: GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    _mediaData.removeAt(index);
+                                  });
+                                },
+                                child: Container(
+                                  decoration: const BoxDecoration(color: AppColors.primaryfontColor, shape: BoxShape.circle),
+                                  padding: const EdgeInsets.all(4),
+                                  child: const Icon(Icons.close, size: 16, color: AppColors.backgroundColor),
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      },
                     ),
-                    Expanded(
-                      child: TextField(
-                        controller: _contentController,
-                        focusNode: _contentFocusNode,
-                        decoration: const InputDecoration(
-                          border: InputBorder.none,
-                          isCollapsed: true,
-                          contentPadding: EdgeInsets.only(top: 4),
-                        ),
-                        style: const TextStyle(fontSize: 16, color: AppColors.primaryfontColor, fontWeight: FontWeight.w500, height: 1.5),
-                        maxLines: null,
-                        keyboardType: TextInputType.multiline,
-                        cursorColor: AppColors.primaryfontColor,
-                        scrollPhysics: const BouncingScrollPhysics(),
-                      ),
-                    ),
-                    if (_mediaData.isNotEmpty)
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        child: SizedBox(
-                          height: 100,
-                          child: ListView.separated(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: _mediaData.length,
-                            separatorBuilder: (_, __) => const SizedBox(width: 8),
-                            itemBuilder: (context, index) {
-                              final bytes = _mediaData[index];
-                              return Stack(
-                                children: [
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(12),
-                                    child: Image.memory(bytes, height: 100, width: 100, fit: BoxFit.cover),
-                                  ),
-                                  Positioned(
-                                    top: 4,
-                                    right: 4,
-                                    child: GestureDetector(
-                                      onTap: () {
-                                        setState(() {
-                                          _mediaData.removeAt(index);
-                                        });
-                                      },
-                                      child: Container(
-                                        decoration: const BoxDecoration(color: AppColors.primaryfontColor, shape: BoxShape.circle),
-                                        padding: const EdgeInsets.all(4),
-                                        child: const Icon(Icons.close, size: 16, color: AppColors.backgroundColor),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              );
-                            },
-                          ),
-                        ),
-                      ),
-                    const SizedBox(height: 12),
-                    const SizedBox(height: 48),
-                  ],
-                )
-                : SingleChildScrollView(
-                  physics: const BouncingScrollPhysics(),
-                  padding: const EdgeInsets.only(bottom: 48),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      TextField(
-                        controller: _titleController,
-                        focusNode: _titleFocusNode,
-                        readOnly: true,
-                        decoration: const InputDecoration(
-                          border: InputBorder.none,
-                          isCollapsed: true,
-                          contentPadding: EdgeInsets.only(top: 8, bottom: 12),
-                        ),
-                        style: const TextStyle(fontSize: 28.0, fontWeight: FontWeight.bold, color: AppColors.primaryfontColor),
-                        maxLines: null,
-                        cursorColor: AppColors.primaryfontColor,
-                      ),
-
-                      if (_titleController.text.isNotEmpty && _contentController.text.isNotEmpty) const SizedBox(height: 4),
-                      TextField(
-                        controller: _contentController,
-                        focusNode: _contentFocusNode,
-                        readOnly: true,
-                        decoration: const InputDecoration(
-                          border: InputBorder.none,
-                          isCollapsed: true,
-                          contentPadding: EdgeInsets.only(top: 4),
-                        ),
-                        style: const TextStyle(fontSize: 16, color: AppColors.primaryfontColor, height: 1.5),
-                        maxLines: null,
-                        keyboardType: TextInputType.multiline,
-                        cursorColor: AppColors.primaryfontColor,
-                      ),
-                      if (_mediaData.isNotEmpty && (_titleController.text.isNotEmpty || _contentController.text.isNotEmpty))
-                        const SizedBox(height: 12),
-                      if (_mediaData.isNotEmpty && _titleController.text.isEmpty && _contentController.text.isEmpty)
-                        const SizedBox(height: 4),
-                      for (final bytes in _mediaData) ...[
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 4),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(12),
-                            child: Image.memory(bytes, width: double.infinity, fit: BoxFit.cover),
-                          ),
-                        ),
-                      ],
-                    ],
                   ),
                 ),
+              const SizedBox(height: 12),
+              const SizedBox(height: 48),
+            ],
+          ),
+        ),
       ),
     );
   }
