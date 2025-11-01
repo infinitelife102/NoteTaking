@@ -1,14 +1,18 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:provider/provider.dart';
 import 'models/note_item.dart';
 import 'note_service.dart';
 import 'note_list_page.dart';
+import 'theme_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  final themeProvider = ThemeProvider();
+  await themeProvider.initialize();
 
   await Hive.initFlutter();
   Hive.registerAdapter(NoteItemAdapter());
@@ -29,26 +33,46 @@ void main() async {
   final noteService = NoteService();
   await noteService.init();
 
-  runApp(MyApp(noteService: noteService));
+  runApp(MyApp(noteService: noteService, themeProvider: themeProvider));
 }
 
 class MyApp extends StatelessWidget {
   final NoteService noteService;
+  final ThemeProvider themeProvider;
 
-  const MyApp({super.key, required this.noteService});
+  const MyApp({super.key, required this.noteService, required this.themeProvider});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'nospass',
-      theme: ThemeData.dark().copyWith(
-        scaffoldBackgroundColor: Colors.white,
-        textTheme: GoogleFonts.poppinsTextTheme(),
-        appBarTheme: const AppBarTheme(backgroundColor: Colors.white, foregroundColor: Colors.black),
-        floatingActionButtonTheme: const FloatingActionButtonThemeData(backgroundColor: Colors.black, foregroundColor: Colors.white),
+    return MultiProvider(
+      providers: [ChangeNotifierProvider.value(value: themeProvider), Provider.value(value: noteService)],
+      child: Consumer<ThemeProvider>(
+        builder: (context, themeProvider, child) {
+          return MaterialApp(
+            title: 'Wisdom Notes',
+            theme: themeProvider.lightTheme,
+            darkTheme: themeProvider.darkTheme,
+            themeMode:
+                themeProvider.themeMode == AppThemeMode.system
+                    ? ThemeMode.system
+                    : themeProvider.isDarkMode
+                    ? ThemeMode.dark
+                    : ThemeMode.light,
+            debugShowCheckedModeBanner: false,
+            home: const NoteListPageWrapper(),
+          );
+        },
       ),
-      debugShowCheckedModeBanner: false,
-      home: NoteListPage(noteService: noteService),
     );
+  }
+}
+
+class NoteListPageWrapper extends StatelessWidget {
+  const NoteListPageWrapper({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final noteService = Provider.of<NoteService>(context, listen: false);
+    return NoteListPage(noteService: noteService);
   }
 }

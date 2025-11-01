@@ -5,7 +5,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:uuid/uuid.dart';
 import 'models/note_item.dart';
-import 'theme.dart';
 
 class NoteFormPage extends StatefulWidget {
   final List<String> existingCategories;
@@ -29,6 +28,7 @@ class _NoteFormPageState extends State<NoteFormPage> {
 
   String _selectedCategory = '';
   bool _hasChanges = false;
+  bool _isInEditMode = false;
 
   @override
   void initState() {
@@ -41,6 +41,10 @@ class _NoteFormPageState extends State<NoteFormPage> {
       _mediaData.addAll(note.mediaData);
     } else {
       _selectedCategory = widget.initialCategory ?? (widget.existingCategories.isNotEmpty ? widget.existingCategories.first : 'General');
+      _isInEditMode = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _titleFocusNode.requestFocus();
+      });
     }
 
     _titleFocusNode.addListener(_handleFocusChange);
@@ -84,55 +88,206 @@ class _NoteFormPageState extends State<NoteFormPage> {
   }
 
   Future<String?> _promptForCategory() async {
+    final theme = Theme.of(context);
     String? newCategory;
-    await showDialog<String>(
+    await showModalBottomSheet<String>(
       context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
       builder: (ctx) {
         final controller = TextEditingController();
-        return AlertDialog(
-          backgroundColor: AppColors.backgroundColor,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
-          title: const Text("Create new category", style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.primaryfontColor)),
-          content: TextField(
-            controller: controller,
-            autofocus: true,
-            style: const TextStyle(color: AppColors.primaryfontColor),
-            decoration: InputDecoration(
-              hintText: "Enter category name",
-              hintStyle: TextStyle(color: AppColors.primaryfontColor.withOpacity(0.4)),
-              enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: AppColors.secondaryfontColor),
-                borderRadius: BorderRadius.circular(25),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: AppColors.secondaryfontColor, width: 2),
-                borderRadius: BorderRadius.circular(25),
-              ),
-              filled: true,
-              fillColor: AppColors.secondaryfontColor.withOpacity(0.05),
-            ),
+        return Container(
+          decoration: BoxDecoration(
+            color: theme.scaffoldBackgroundColor,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+            boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 10, offset: const Offset(0, -5))],
           ),
-          actionsPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(ctx, null),
-              style: TextButton.styleFrom(foregroundColor: AppColors.primaryfontColor.withOpacity(0.7)),
-              child: const Text("Cancel"),
-            ),
-            ElevatedButton(
-              onPressed: () => Navigator.pop(ctx, controller.text.trim()),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.secondaryfontColor,
-                foregroundColor: AppColors.backgroundColor,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 40,
+                height: 4,
+                margin: const EdgeInsets.only(top: 12),
+                decoration: BoxDecoration(color: theme.colorScheme.onSurface.withOpacity(0.3), borderRadius: BorderRadius.circular(2)),
               ),
-              child: const Text("Add"),
-            ),
-          ],
+
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: Text(
+                  'Create new category',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: theme.colorScheme.onSurface),
+                ),
+              ),
+
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: TextField(
+                  controller: controller,
+                  autofocus: true,
+                  style: TextStyle(color: theme.colorScheme.onSurface),
+                  decoration: InputDecoration(
+                    hintText: "Enter category name",
+                    hintStyle: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.4)),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: theme.colorScheme.onSurface.withOpacity(0.3)),
+                      borderRadius: BorderRadius.circular(25),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: theme.colorScheme.primary, width: 2),
+                      borderRadius: BorderRadius.circular(25),
+                    ),
+                    filled: true,
+                    fillColor: theme.colorScheme.surface,
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                  ),
+                  onSubmitted: (value) {
+                    if (value.trim().isNotEmpty) {
+                      Navigator.pop(ctx, value.trim());
+                    }
+                  },
+                ),
+              ),
+
+              const SizedBox(height: 20),
+
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextButton(
+                        onPressed: () => Navigator.pop(ctx, null),
+                        style: TextButton.styleFrom(
+                          foregroundColor: theme.colorScheme.onSurface.withOpacity(0.7),
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(25),
+                            side: BorderSide(color: theme.colorScheme.onSurface.withOpacity(0.2)),
+                          ),
+                        ),
+                        child: const Text("Cancel", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () => Navigator.pop(ctx, controller.text.trim()),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: theme.colorScheme.primary,
+                          foregroundColor: theme.colorScheme.onPrimary,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+                        ),
+                        child: const Text("Add", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 20),
+              SizedBox(height: MediaQuery.of(context).viewInsets.bottom + 40),
+            ],
+          ),
         );
       },
     ).then((value) => newCategory = value);
     return newCategory;
+  }
+
+  void _showCategorySelectionBottomSheet() {
+    final theme = Theme.of(context);
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) {
+        return Container(
+          decoration: BoxDecoration(
+            color: theme.scaffoldBackgroundColor,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+            boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 10, offset: const Offset(0, -5))],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 40,
+                height: 4,
+                margin: const EdgeInsets.only(top: 12),
+                decoration: BoxDecoration(color: theme.colorScheme.onSurface.withOpacity(0.3), borderRadius: BorderRadius.circular(2)),
+              ),
+
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: Text(
+                  'Select Category',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: theme.colorScheme.onSurface),
+                ),
+              ),
+
+              ...widget.existingCategories.map((category) {
+                final isSelected = _selectedCategory == category;
+                return ListTile(
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 4),
+                  leading: Container(
+                    width: 16,
+                    height: 16,
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.onSurface,
+                      shape: BoxShape.circle,
+                      border: isSelected ? Border.all(color: theme.colorScheme.surface, width: 2) : null,
+                    ),
+                  ),
+                  title: Text(
+                    category,
+                    style: TextStyle(color: theme.colorScheme.onSurface, fontWeight: isSelected ? FontWeight.bold : FontWeight.normal),
+                  ),
+                  trailing: isSelected ? Icon(Icons.check, color: theme.colorScheme.primary) : null,
+                  selected: isSelected,
+                  selectedTileColor: theme.colorScheme.onSurface.withOpacity(0.05),
+                  onTap: () {
+                    setState(() {
+                      _selectedCategory = category;
+                    });
+                    Navigator.pop(context);
+                  },
+                );
+              }).toList(),
+
+              if (widget.existingCategories.isNotEmpty)
+                Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 24),
+                  height: 1,
+                  color: theme.colorScheme.onSurface.withOpacity(0.1),
+                ),
+
+              ListTile(
+                contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 4),
+                leading: Container(
+                  width: 16,
+                  height: 16,
+                  decoration: BoxDecoration(color: theme.colorScheme.primary, shape: BoxShape.circle),
+                  child: Icon(Icons.add, color: theme.colorScheme.onPrimary, size: 12),
+                ),
+                title: Text('Create new category', style: TextStyle(color: theme.colorScheme.onSurface, fontWeight: FontWeight.w500)),
+                onTap: () async {
+                  Navigator.pop(context);
+                  final newCat = await _promptForCategory();
+                  if (newCat != null && newCat.isNotEmpty) {
+                    setState(() => _selectedCategory = newCat);
+                  }
+                },
+              ),
+
+              const SizedBox(height: 20),
+              SizedBox(height: MediaQuery.of(context).viewInsets.bottom + 40),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   void _saveNote() {
@@ -157,18 +312,11 @@ class _NoteFormPageState extends State<NoteFormPage> {
     Navigator.pop(context, note);
   }
 
-  void _autoSave() {
-    if (_hasChanges) {
-      _saveNote();
-    } else {
-      Navigator.pop(context);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
-      backgroundColor: AppColors.backgroundColor,
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(72),
         child: ValueListenableBuilder<TextEditingValue>(
@@ -177,9 +325,8 @@ class _NoteFormPageState extends State<NoteFormPage> {
             final appBarTitleText = value.text.trim();
             final dynamicTitle = appBarTitleText.isNotEmpty ? appBarTitleText : 'Untitled';
             return AppBar(
-              backgroundColor: AppColors.backgroundColor,
               elevation: 0,
-              foregroundColor: AppColors.primaryfontColor,
+              scrolledUnderElevation: 0,
               titleSpacing: 16,
               title: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -187,49 +334,23 @@ class _NoteFormPageState extends State<NoteFormPage> {
                 children: [
                   Text(dynamicTitle, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 2),
-                  Text(_selectedCategory, style: TextStyle(fontSize: 12, color: AppColors.primaryfontColor.withOpacity(0.6))),
+                  Text(_selectedCategory, style: TextStyle(fontSize: 12, color: theme.colorScheme.onSurface.withOpacity(0.6))),
                 ],
               ),
               actions: [
-                PopupMenuButton<String>(
-                  initialValue: _selectedCategory,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                  color: AppColors.secondaryfontColor,
-                  elevation: 8,
-                  icon: const Icon(CupertinoIcons.tag, color: AppColors.primaryfontColor),
+                IconButton(
+                  icon: Icon(CupertinoIcons.tag, color: theme.colorScheme.onSurface),
                   tooltip: "Select Category",
-                  onSelected: (value) async {
-                    if (value == 'New Category') {
-                      final newCat = await _promptForCategory();
-                      if (newCat != null && newCat.isNotEmpty) {
-                        setState(() => _selectedCategory = newCat);
-                      }
-                    } else {
-                      setState(() => _selectedCategory = value);
-                    }
-                  },
-                  itemBuilder:
-                      (_) => [
-                        for (final cat in widget.existingCategories)
-                          PopupMenuItem<String>(
-                            value: cat,
-                            child: Text(cat, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
-                          ),
-                        const PopupMenuDivider(),
-                        const PopupMenuItem<String>(
-                          value: 'New Category',
-                          child: Text("➕ New Category", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
-                        ),
-                      ],
+                  onPressed: _showCategorySelectionBottomSheet,
                 ),
                 const SizedBox(width: 16),
                 IconButton(
-                  icon: const Icon(CupertinoIcons.photo_camera, color: AppColors.primaryfontColor),
+                  icon: Icon(CupertinoIcons.photo_camera, color: theme.colorScheme.onSurface),
                   tooltip: "Add Image",
                   onPressed: () {
                     showModalBottomSheet(
                       context: context,
-                      backgroundColor: AppColors.backgroundColor,
+                      backgroundColor: theme.scaffoldBackgroundColor,
                       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
                       builder:
                           (_) => SafeArea(
@@ -239,9 +360,9 @@ class _NoteFormPageState extends State<NoteFormPage> {
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   ListTile(
-                                    leading: Icon(CupertinoIcons.camera, color: AppColors.secondaryfontColor),
+                                    leading: Icon(CupertinoIcons.camera, color: theme.colorScheme.onSurface),
                                     title: const Text("Take photo", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
-                                    textColor: AppColors.primaryfontColor,
+                                    textColor: theme.colorScheme.onSurface,
                                     onTap: () {
                                       Navigator.pop(context);
                                       _pickImage(ImageSource.camera);
@@ -249,9 +370,9 @@ class _NoteFormPageState extends State<NoteFormPage> {
                                   ),
                                   const SizedBox(height: 12),
                                   ListTile(
-                                    leading: Icon(CupertinoIcons.photo_on_rectangle, color: AppColors.secondaryfontColor),
+                                    leading: Icon(CupertinoIcons.photo_on_rectangle, color: theme.colorScheme.onSurface),
                                     title: const Text("Choose from gallery", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
-                                    textColor: AppColors.primaryfontColor,
+                                    textColor: theme.colorScheme.onSurface,
                                     onTap: () {
                                       Navigator.pop(context);
                                       _pickImage(ImageSource.gallery);
@@ -265,101 +386,184 @@ class _NoteFormPageState extends State<NoteFormPage> {
                   },
                 ),
                 const SizedBox(width: 16),
+                _isInEditMode
+                    ? Container(
+                      decoration: BoxDecoration(color: theme.colorScheme.primary, borderRadius: BorderRadius.circular(25)),
+                      child: IconButton(
+                        icon: Icon(CupertinoIcons.checkmark_alt, color: theme.colorScheme.onPrimary),
+                        tooltip: "Save note",
+                        onPressed: _saveNote,
+                      ),
+                    )
+                    : Container(
+                      decoration: BoxDecoration(color: theme.colorScheme.primary, borderRadius: BorderRadius.circular(25)),
+                      child: IconButton(
+                        icon: Icon(CupertinoIcons.pencil, color: theme.colorScheme.onPrimary),
+                        tooltip: "Edit note",
+                        onPressed: () {
+                          setState(() {
+                            _isInEditMode = true;
+                          });
+
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            final hasContent = _contentController.text.trim().isNotEmpty;
+                            if (hasContent) {
+                              _contentFocusNode.requestFocus();
+                              _contentController.selection = TextSelection.collapsed(offset: _contentController.text.length);
+                            } else {
+                              _titleFocusNode.requestFocus();
+                              _titleController.selection = TextSelection.collapsed(offset: _titleController.text.length);
+                            }
+                          });
+                        },
+                      ),
+                    ),
+                const SizedBox(width: 16),
               ],
             );
           },
         ),
       ),
-      body: PopScope(
-        canPop: false,
-        onPopInvoked: (bool didPop) {
-          if (!didPop) {
-            _autoSave();
-          }
-        },
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-          child: Column(
-            children: [
-              TextField(
-                controller: _titleController,
-                focusNode: _titleFocusNode,
-                decoration: const InputDecoration(
-                  border: InputBorder.none,
-                  isCollapsed: true,
-                  contentPadding: EdgeInsets.only(top: 8, bottom: 12),
-                ),
-                style: const TextStyle(fontSize: 28.0, fontWeight: FontWeight.bold, color: AppColors.primaryfontColor),
-                maxLines: null,
-                keyboardType: TextInputType.multiline,
-                textCapitalization: TextCapitalization.sentences,
-                cursorColor: AppColors.primaryfontColor,
-                textInputAction: TextInputAction.next,
-                onSubmitted: (_) => FocusScope.of(context).requestFocus(_contentFocusNode),
-                onTap: () {
-                  _titleController.selection = TextSelection.collapsed(offset: _titleController.text.length);
-                },
-              ),
-              Expanded(
-                child: TextField(
-                  controller: _contentController,
-                  focusNode: _contentFocusNode,
-                  decoration: const InputDecoration(border: InputBorder.none, isCollapsed: true, contentPadding: EdgeInsets.only(top: 4)),
-                  style: const TextStyle(fontSize: 16, color: AppColors.primaryfontColor, fontWeight: FontWeight.w500, height: 1.5),
-                  maxLines: null,
-                  keyboardType: TextInputType.multiline,
-                  cursorColor: AppColors.primaryfontColor,
-                  scrollPhysics: const BouncingScrollPhysics(),
-                  onTap: () {
-                    _contentController.selection = TextSelection.collapsed(offset: _contentController.text.length);
-                  },
-                ),
-              ),
-              if (_mediaData.isNotEmpty)
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  child: SizedBox(
-                    height: 100,
-                    child: ListView.separated(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: _mediaData.length,
-                      separatorBuilder: (_, __) => const SizedBox(width: 8),
-                      itemBuilder: (context, index) {
-                        final bytes = _mediaData[index];
-                        return Stack(
-                          children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(12),
-                              child: Image.memory(bytes, height: 100, width: 100, fit: BoxFit.cover),
-                            ),
-                            Positioned(
-                              top: 4,
-                              right: 4,
-                              child: GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    _mediaData.removeAt(index);
-                                  });
-                                },
-                                child: Container(
-                                  decoration: const BoxDecoration(color: AppColors.primaryfontColor, shape: BoxShape.circle),
-                                  padding: const EdgeInsets.all(4),
-                                  child: const Icon(CupertinoIcons.clear, size: 16, color: AppColors.backgroundColor),
-                                ),
-                              ),
-                            ),
-                          ],
-                        );
+      body: Padding(
+        padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+        child: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    TextField(
+                      controller: _titleController,
+                      focusNode: _titleFocusNode,
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+                        enabledBorder: InputBorder.none,
+                        focusedBorder: InputBorder.none,
+                        errorBorder: InputBorder.none,
+                        disabledBorder: InputBorder.none,
+                        isCollapsed: true,
+                        contentPadding: const EdgeInsets.only(top: 8, bottom: 16),
+                        filled: true,
+                        fillColor: theme.scaffoldBackgroundColor,
+                      ),
+                      style: TextStyle(fontSize: 28.0, fontWeight: FontWeight.bold, color: theme.colorScheme.onBackground),
+                      maxLines: null,
+                      keyboardType: TextInputType.multiline,
+                      textCapitalization: TextCapitalization.sentences,
+                      cursorColor: theme.colorScheme.onBackground,
+                      textInputAction: TextInputAction.next,
+                      scrollPhysics: const NeverScrollableScrollPhysics(),
+                      onSubmitted: (_) => FocusScope.of(context).requestFocus(_contentFocusNode),
+                      onTap: () {
+                        setState(() {
+                          _isInEditMode = true;
+                        });
+                        _titleController.selection = TextSelection.collapsed(offset: _titleController.text.length);
                       },
                     ),
-                  ),
+                    TextField(
+                      controller: _contentController,
+                      focusNode: _contentFocusNode,
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+                        enabledBorder: InputBorder.none,
+                        focusedBorder: InputBorder.none,
+                        errorBorder: InputBorder.none,
+                        disabledBorder: InputBorder.none,
+                        isCollapsed: true,
+                        contentPadding: const EdgeInsets.only(top: 4),
+                        filled: true,
+                        fillColor: theme.scaffoldBackgroundColor,
+                      ),
+                      style: TextStyle(fontSize: 16, color: theme.colorScheme.onBackground, fontWeight: FontWeight.w500, height: 1.5),
+                      maxLines: null,
+                      keyboardType: TextInputType.multiline,
+                      cursorColor: theme.colorScheme.onBackground,
+                      scrollPhysics: const NeverScrollableScrollPhysics(),
+                      onTap: () {
+                        setState(() {
+                          _isInEditMode = true;
+                        });
+                        _contentController.selection = TextSelection.collapsed(offset: _contentController.text.length);
+                      },
+                    ),
+                    if (_mediaData.isNotEmpty && !_isInEditMode) _buildImageSection(theme),
+                    const SizedBox(height: 48),
+                  ],
                 ),
-              const SizedBox(height: 12),
-              const SizedBox(height: 48),
-            ],
-          ),
+              ),
+            ),
+            if (_mediaData.isNotEmpty && _isInEditMode) _buildImageSection(theme),
+            const SizedBox(height: 12),
+          ],
         ),
       ),
+    );
+  }
+
+  Widget _buildImageSection(ThemeData theme) {
+    if (_isInEditMode) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        child: SizedBox(
+          height: 80,
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
+            itemCount: _mediaData.length,
+            separatorBuilder: (_, __) => const SizedBox(width: 8),
+            itemBuilder: (context, index) {
+              final bytes = _mediaData[index];
+              return _buildCompactImageTile(bytes, index, theme);
+            },
+          ),
+        ),
+      );
+    } else {
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        child: GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: 12,
+            mainAxisSpacing: 12,
+            childAspectRatio: 1.0,
+          ),
+          itemCount: _mediaData.length,
+          itemBuilder: (context, index) {
+            final bytes = _mediaData[index];
+            return ClipRRect(borderRadius: BorderRadius.circular(12), child: Image.memory(bytes, fit: BoxFit.cover));
+          },
+        ),
+      );
+    }
+  }
+
+  Widget _buildCompactImageTile(Uint8List bytes, int index, ThemeData theme) {
+    return Stack(
+      children: [
+        ClipRRect(borderRadius: BorderRadius.circular(12), child: Image.memory(bytes, height: 80, width: 80, fit: BoxFit.cover)),
+        Positioned(
+          top: 4,
+          right: 4,
+          child: GestureDetector(
+            onTap: () {
+              setState(() {
+                _mediaData.removeAt(index);
+                _hasChanges = true;
+              });
+            },
+            child: Container(
+              decoration: BoxDecoration(color: Colors.black.withOpacity(0.6), shape: BoxShape.circle),
+              padding: const EdgeInsets.all(4),
+              child: Icon(CupertinoIcons.clear, size: 14, color: Colors.white),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

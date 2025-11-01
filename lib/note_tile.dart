@@ -2,7 +2,6 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'models/note_item.dart';
-import 'theme.dart';
 
 class NoteTile extends StatelessWidget {
   final NoteItem note;
@@ -11,11 +10,12 @@ class NoteTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final dateStr = DateFormat.yMd().add_Hm().format(note.createdAt);
     final hasMedia = note.mediaData.isNotEmpty;
 
     return Card(
-      color: hasMedia ? Colors.transparent : AppColors.secondaryfontColor,
+      color: hasMedia ? Colors.transparent : theme.colorScheme.surface,
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       elevation: 1.5,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
@@ -30,29 +30,31 @@ class NoteTile extends StatelessWidget {
                       child: Image.memory(note.mediaData.first, fit: BoxFit.cover),
                     ),
                   ),
-                  Positioned.fill(child: Container(color: AppColors.secondaryfontColor.withOpacity(0.6))),
-                  _buildListTile(dateStr),
+                  Positioned.fill(child: Container(color: theme.colorScheme.surface.withOpacity(0.7))),
+                  _buildListTile(dateStr, theme),
                 ],
               )
-              : _buildListTile(dateStr),
+              : _buildListTile(dateStr, theme),
     );
   }
 
-  Widget _buildListTile(String dateStr) {
+  Widget _buildListTile(String dateStr, ThemeData theme) {
+    final textColor = theme.colorScheme.onBackground;
+
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-      title: Text(note.title, style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.backgroundColor)),
+      title: Text(note.title, style: TextStyle(fontWeight: FontWeight.bold, color: textColor)),
       subtitle: Padding(
         padding: const EdgeInsets.only(top: 4),
-        child: Text(note.content, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(color: AppColors.backgroundColor)),
+        child: Text(note.content, maxLines: 2, overflow: TextOverflow.ellipsis, style: TextStyle(color: textColor)),
       ),
       trailing: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(note.category, style: const TextStyle(fontSize: 12, color: AppColors.backgroundColor)),
+          Text(note.category, style: TextStyle(fontSize: 12, color: textColor.withOpacity(0.7))),
           const SizedBox(height: 4),
-          Text(dateStr, style: const TextStyle(fontSize: 10, color: AppColors.backgroundColor)),
+          Text(dateStr, style: TextStyle(fontSize: 10, color: textColor.withOpacity(0.6))),
         ],
       ),
     );
