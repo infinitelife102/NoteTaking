@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:provider/provider.dart';
 import 'note_form_page.dart';
 import 'note_tile.dart';
 import 'models/note_item.dart';
 import 'note_service.dart';
 import 'trash_page.dart';
-import 'theme_provider.dart';
 
 class NoteListPage extends StatefulWidget {
   final NoteService noteService;
@@ -153,95 +151,6 @@ class _NoteListPageState extends State<NoteListPage> with TickerProviderStateMix
         );
       },
     );
-  }
-
-  void _showThemeBottomSheet() {
-    final theme = Theme.of(context);
-    Provider.of<ThemeProvider>(context, listen: false);
-
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      builder: (context) {
-        return Container(
-          decoration: BoxDecoration(
-            color: theme.scaffoldBackgroundColor,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-            boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 10, offset: const Offset(0, -5))],
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 40,
-                height: 4,
-                margin: const EdgeInsets.only(top: 12),
-                decoration: BoxDecoration(color: theme.colorScheme.onSurface.withOpacity(0.3), borderRadius: BorderRadius.circular(2)),
-              ),
-
-              Padding(
-                padding: const EdgeInsets.all(20),
-                child: Text('Theme', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: theme.colorScheme.onSurface)),
-              ),
-
-              Consumer<ThemeProvider>(
-                builder: (context, provider, child) {
-                  return Column(
-                    children: [
-                      for (AppThemeMode themeMode in AppThemeMode.values) ...[
-                        ListTile(
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 4),
-                          leading: Icon(_getThemeIcon(themeMode), color: theme.colorScheme.onSurface),
-                          title: Text(
-                            _getThemeDisplayName(themeMode),
-                            style: TextStyle(
-                              color: theme.colorScheme.onSurface,
-                              fontWeight: provider.themeMode == themeMode ? FontWeight.bold : FontWeight.normal,
-                            ),
-                          ),
-                          trailing: provider.themeMode == themeMode ? Icon(Icons.check, color: theme.colorScheme.primary) : null,
-                          selected: provider.themeMode == themeMode,
-                          selectedTileColor: theme.colorScheme.onSurface.withOpacity(0.05),
-                          onTap: () {
-                            provider.setThemeMode(themeMode);
-                            Navigator.pop(context);
-                          },
-                        ),
-                      ],
-                    ],
-                  );
-                },
-              ),
-
-              const SizedBox(height: 20),
-              SizedBox(height: MediaQuery.of(context).viewInsets.bottom + 40),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  IconData _getThemeIcon(AppThemeMode themeMode) {
-    switch (themeMode) {
-      case AppThemeMode.light:
-        return Icons.light_mode;
-      case AppThemeMode.dark:
-        return Icons.dark_mode;
-      case AppThemeMode.system:
-        return Icons.brightness_auto;
-    }
-  }
-
-  String _getThemeDisplayName(AppThemeMode themeMode) {
-    switch (themeMode) {
-      case AppThemeMode.light:
-        return 'Light';
-      case AppThemeMode.dark:
-        return 'Dark';
-      case AppThemeMode.system:
-        return 'System';
-    }
   }
 
   Widget _buildSimpleNotesList(List<NoteItem> filteredNotes) {
@@ -425,12 +334,7 @@ class _NoteListPageState extends State<NoteListPage> with TickerProviderStateMix
                   style: TextStyle(color: theme.colorScheme.onSurface, fontSize: 18),
                   cursorColor: theme.colorScheme.onSurface,
                 )
-                : GestureDetector(
-                  onTap: () {
-                    _showThemeBottomSheet();
-                  },
-                  child: Text('Wisdom', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24)),
-                ),
+                : Text('Wisdom', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24)),
         centerTitle: false,
         leading:
             _isSearching
