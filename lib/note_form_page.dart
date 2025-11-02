@@ -338,54 +338,56 @@ class _NoteFormPageState extends State<NoteFormPage> {
                 ],
               ),
               actions: [
-                IconButton(
-                  icon: Icon(CupertinoIcons.tag, color: theme.colorScheme.onSurface),
-                  tooltip: "Select Category",
-                  onPressed: _showCategorySelectionBottomSheet,
-                ),
-                const SizedBox(width: 16),
-                IconButton(
-                  icon: Icon(CupertinoIcons.photo_camera, color: theme.colorScheme.onSurface),
-                  tooltip: "Add Image",
-                  onPressed: () {
-                    showModalBottomSheet(
-                      context: context,
-                      backgroundColor: theme.scaffoldBackgroundColor,
-                      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
-                      builder:
-                          (_) => SafeArea(
-                            child: Padding(
-                              padding: const EdgeInsets.fromLTRB(20, 20, 20, 30),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  ListTile(
-                                    leading: Icon(CupertinoIcons.camera, color: theme.colorScheme.onSurface),
-                                    title: const Text("Take photo", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
-                                    textColor: theme.colorScheme.onSurface,
-                                    onTap: () {
-                                      Navigator.pop(context);
-                                      _pickImage(ImageSource.camera);
-                                    },
-                                  ),
-                                  const SizedBox(height: 12),
-                                  ListTile(
-                                    leading: Icon(CupertinoIcons.photo_on_rectangle, color: theme.colorScheme.onSurface),
-                                    title: const Text("Choose from gallery", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
-                                    textColor: theme.colorScheme.onSurface,
-                                    onTap: () {
-                                      Navigator.pop(context);
-                                      _pickImage(ImageSource.gallery);
-                                    },
-                                  ),
-                                ],
+                if (_isInEditMode) ...[
+                  IconButton(
+                    icon: Icon(CupertinoIcons.tag, color: theme.colorScheme.onSurface),
+                    tooltip: "Select Category",
+                    onPressed: _showCategorySelectionBottomSheet,
+                  ),
+                  const SizedBox(width: 16),
+                  IconButton(
+                    icon: Icon(CupertinoIcons.photo_camera, color: theme.colorScheme.onSurface),
+                    tooltip: "Add Image",
+                    onPressed: () {
+                      showModalBottomSheet(
+                        context: context,
+                        backgroundColor: theme.scaffoldBackgroundColor,
+                        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+                        builder:
+                            (_) => SafeArea(
+                              child: Padding(
+                                padding: const EdgeInsets.fromLTRB(20, 20, 20, 30),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    ListTile(
+                                      leading: Icon(CupertinoIcons.camera, color: theme.colorScheme.onSurface),
+                                      title: const Text("Take photo", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+                                      textColor: theme.colorScheme.onSurface,
+                                      onTap: () {
+                                        Navigator.pop(context);
+                                        _pickImage(ImageSource.camera);
+                                      },
+                                    ),
+                                    const SizedBox(height: 12),
+                                    ListTile(
+                                      leading: Icon(CupertinoIcons.photo_on_rectangle, color: theme.colorScheme.onSurface),
+                                      title: const Text("Choose from gallery", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+                                      textColor: theme.colorScheme.onSurface,
+                                      onTap: () {
+                                        Navigator.pop(context);
+                                        _pickImage(ImageSource.gallery);
+                                      },
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
-                          ),
-                    );
-                  },
-                ),
-                const SizedBox(width: 16),
+                      );
+                    },
+                  ),
+                  const SizedBox(width: 16),
+                ],
                 _isInEditMode
                     ? Container(
                       decoration: BoxDecoration(color: theme.colorScheme.primary, borderRadius: BorderRadius.circular(25)),
@@ -489,14 +491,12 @@ class _NoteFormPageState extends State<NoteFormPage> {
                         _contentController.selection = TextSelection.collapsed(offset: _contentController.text.length);
                       },
                     ),
-                    if (_mediaData.isNotEmpty && !_isInEditMode) _buildImageSection(theme),
+                    if (_mediaData.isNotEmpty) _buildImageSection(theme),
                     const SizedBox(height: 48),
                   ],
                 ),
               ),
             ),
-            if (_mediaData.isNotEmpty && _isInEditMode) _buildImageSection(theme),
-            const SizedBox(height: 12),
           ],
         ),
       ),
@@ -523,20 +523,19 @@ class _NoteFormPageState extends State<NoteFormPage> {
     } else {
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 16),
-        child: GridView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            crossAxisSpacing: 12,
-            mainAxisSpacing: 12,
-            childAspectRatio: 1.0,
-          ),
-          itemCount: _mediaData.length,
-          itemBuilder: (context, index) {
-            final bytes = _mediaData[index];
-            return ClipRRect(borderRadius: BorderRadius.circular(12), child: Image.memory(bytes, fit: BoxFit.cover));
-          },
+        child: Column(
+          children:
+              _mediaData.asMap().entries.map((entry) {
+                final index = entry.key;
+                final bytes = entry.value;
+                return Padding(
+                  padding: EdgeInsets.only(bottom: index < _mediaData.length - 1 ? 12 : 0),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: Image.memory(bytes, fit: BoxFit.fitWidth, width: double.infinity),
+                  ),
+                );
+              }).toList(),
         ),
       );
     }
