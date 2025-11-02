@@ -3,16 +3,33 @@ import 'package:flutter/cupertino.dart';
 import 'note_service.dart';
 import 'note_tile.dart';
 
-class TrashPage extends StatelessWidget {
+class TrashPage extends StatefulWidget {
   final NoteService noteService;
 
   const TrashPage({super.key, required this.noteService});
 
   @override
+  State<TrashPage> createState() => _TrashPageState();
+}
+
+class _TrashPageState extends State<TrashPage> {
+  void _checkIfTrashEmpty() {
+    final trashedNotes = widget.noteService.getAllNotes().where((note) => note.category == 'trashed').toList();
+    if (trashedNotes.isEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          Navigator.pop(context);
+        }
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final trashedNotes =
-        noteService.getAllNotes().where((note) => note.category == 'trashed').toList()..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+        widget.noteService.getAllNotes().where((note) => note.category == 'trashed').toList()
+          ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
 
     return Scaffold(
       appBar: AppBar(
@@ -44,11 +61,12 @@ class TrashPage extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(color: theme.colorScheme.error, borderRadius: BorderRadius.circular(25)),
-                      child: Icon(CupertinoIcons.delete_solid, color: theme.colorScheme.onError),
+                      child: Icon(CupertinoIcons.clear, color: theme.colorScheme.onError),
                     ),
                     confirmDismiss: (direction) async {
                       if (direction == DismissDirection.startToEnd) {
-                        noteService.restoreFromTrash(note);
+                        widget.noteService.restoreFromTrash(note);
+                        _checkIfTrashEmpty();
                         return true;
                       } else if (direction == DismissDirection.endToStart) {
                         final confirm = await showModalBottomSheet<bool>(
@@ -136,7 +154,8 @@ class TrashPage extends StatelessWidget {
                           },
                         );
                         if (confirm == true) {
-                          noteService.deletePermanently(note.id);
+                          widget.noteService.deletePermanently(note.id);
+                          _checkIfTrashEmpty();
                           return true;
                         }
                       }
