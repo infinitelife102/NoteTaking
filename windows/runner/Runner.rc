@@ -89,13 +89,13 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "me.untreu" "\0"
-            VALUE "FileDescription", "wisdom" "\0"
+            VALUE "CompanyName", "NoteTaking" "\0"
+            VALUE "FileDescription", "NoteTaking" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "wisdom" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2025 me.untreu. All rights reserved." "\0"
-            VALUE "OriginalFilename", "wisdom.exe" "\0"
-            VALUE "ProductName", "wisdom" "\0"
+            VALUE "InternalName", "NoteTaking" "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2025 NoteTaking. All rights reserved." "\0"
+            VALUE "OriginalFilename", "NoteTaking.exe" "\0"
+            VALUE "ProductName", "NoteTaking" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

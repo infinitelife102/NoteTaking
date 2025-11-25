@@ -334,7 +334,7 @@ class _NoteListPageState extends State<NoteListPage> with TickerProviderStateMix
                   style: TextStyle(color: theme.colorScheme.onSurface, fontSize: 18),
                   cursorColor: theme.colorScheme.onSurface,
                 )
-                : Text('Wisdom', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24)),
+                : Text('NoteTaking', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24)),
         centerTitle: false,
         leading:
             _isSearching

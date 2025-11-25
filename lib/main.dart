@@ -49,7 +49,7 @@ class MyApp extends StatelessWidget {
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, child) {
           return MaterialApp(
-            title: 'Wisdom Notes',
+            title: 'NoteTaking',
             theme: themeProvider.lightTheme,
             darkTheme: themeProvider.darkTheme,
             themeMode:

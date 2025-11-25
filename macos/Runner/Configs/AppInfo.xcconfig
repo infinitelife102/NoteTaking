@@ -5,10 +5,10 @@
 // 'flutter create' template.
 
 // The application's name. By default this is also the title of the Flutter window.
-PRODUCT_NAME = wisdom
+PRODUCT_NAME = NoteTaking
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = me.untreu.wisdom
+PRODUCT_BUNDLE_IDENTIFIER = com.notetaking.app
 
 // The copyright displayed in application information
-PRODUCT_COPYRIGHT = Copyright © 2025 me.untreu. All rights reserved.
+PRODUCT_COPYRIGHT = Copyright © 2025 NoteTaking. All rights reserved.
