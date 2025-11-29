@@ -1,118 +1,135 @@
-# NoteTaking
+# 📝 Wisdom Note Taking App
 
-A simple, secure note-taking app built with Flutter. Works fully offline. Notes are stored locally and encrypted.
+A simple, secure, and intuitive note-taking app built with the power of **Flutter**. Designed for speed, security, and a seamless offline experience. 🚀
 
-## Features
+<p align="center">
+  <img src="images/home.png" alt="Wisdom Note App Home" width="50%">
+</p>
 
-- **Offline-first** – No account required; all data stays on your device
-- **Encrypted storage** – Notes are encrypted using Hive with a secure key
-- **Light / dark theme** – Follows system theme or manual toggle
-- **Rich notes** – Text and images (camera or gallery)
-- **Trash** – Deleted notes can be restored from trash
+---
 
-## Supported platforms
+### 📥 Download Now
 
-- Android  
-- iOS  
-- macOS  
-- Windows  
-- Linux  
-- Web  
+[![Download on the App Store](https://img.shields.io/badge/Download-App_Store-black?style=for-the-badge&logo=apple)](https://apps.apple.com/us/app/wisdom-note-taking-app/id6744746646)
 
-## Requirements
+---
 
-- [Flutter SDK](https://flutter.dev/docs/get-started/install) (stable channel, SDK ^3.7.2)
-- For mobile: Android Studio / Xcode and device or emulator
-- For desktop: platform-specific build tools (e.g. Visual Studio for Windows, Xcode for macOS)
+## ✨ Key Features
 
-## Getting started
+- 🔐 **Secure & Encrypted** – Your thoughts are private. Notes are encrypted using Hive with a secure key.
+- 📡 **Offline-First** – No internet? No problem. Everything stays on your device.
+- 🌓 **Adaptive Themes** – Seamlessly switches between Light and Dark modes based on your system.
+- 📸 **Rich Content** – Capture ideas with text and images directly from your camera or gallery.
+- 🗑️ **Trash System** – Accidentally deleted something? Restore it easily from the trash.
+- ⚡ **Lightning Fast** – Built for performance across all devices.
 
-### 1. Clone and open the project
+---
 
+## 📱 Supported Platforms
+
+Stay productive anywhere, on any device!
+
+| Platform | Status |
+| :--- | :--- |
+| **Android** | ✅ Supported |
+| **iOS** | ✅ Supported |
+| **macOS** | ✅ Supported |
+| **Windows** | ✅ Supported |
+| **Linux** | ✅ Supported |
+| **Web** | ✅ Supported |
+
+---
+
+## 🛠️ Requirements
+
+- [Flutter SDK](https://flutter.dev/docs/get-started/install) (stable channel, SDK `^3.7.2`)
+- **Mobile:** Android Studio / Xcode
+- **Desktop:** Platform-specific build tools (Visual Studio for Windows, Xcode for macOS)
+
+---
+
+## 🚀 Getting Started
+
+### 1️⃣ Clone & Navigate
 ```bash
 git clone <repository-url>
-cd <project-folder>
+cd note_taking
 ```
 
-### 2. Install dependencies
-
+### 2️⃣ Install Dependencies
 ```bash
 flutter pub get
 ```
 
-### 3. Run the app
-
+### 3️⃣ Run the App
 ```bash
-# Run on default device (phone/emulator/Chrome)
+# Default device
 flutter run
 
-# Run on a specific platform
+# Platform specific
 flutter run -d chrome
 flutter run -d windows
 flutter run -d macos
 ```
 
-### 4. Build for release
+### 4️⃣ Build for Release
+```bash
+flutter build apk       # Android APK
+flutter build appbundle # Android Play Store
+flutter build ios       # iOS
+flutter build web       # Web
+flutter build windows   # Windows
+flutter build macos     # macOS
+flutter build linux     # Linux
+```
+
+---
+
+## 📂 Project Structure
 
 ```bash
-# Android APK
-flutter build apk
-
-# Android App Bundle (for Play Store)
-flutter build appbundle
-
-# iOS (requires macOS and Xcode)
-flutter build ios
-
-# Web
-flutter build web
-
-# Windows
-flutter build windows
-
-# macOS
-flutter build macos
-
-# Linux
-flutter build linux
-```
-
-## Project structure
-
-```
 lib/
-  main.dart           # App entry, theme, providers
-  note_list_page.dart # Note list and FAB
-  note_form_page.dart # Create/edit note screen
-  note_tile.dart      # Note list item widget
-  note_service.dart   # Hive box and CRUD
-  theme.dart          # Theme data
-  theme_provider.dart # Theme mode state
-  models/
-    note_item.dart    # Note model (Hive)
-    note_item.g.dart  # Generated Hive adapter
+├── 📄 main.dart           # App entry, theme, providers
+├── 📄 note_list_page.dart # Note list and FAB
+├── 📄 note_form_page.dart # Create/edit note screen
+├── 📄 note_tile.dart      # Note list item widget
+├── 📄 note_service.dart   # Hive box and CRUD
+├── 📄 theme.dart          # Theme data
+├── 📄 theme_provider.dart # Theme mode state
+└── 📁 models/
+    ├── 📄 note_item.dart    # Note model (Hive)
+    └── 📄 note_item.g.dart  # Generated Hive adapter
 ```
 
-## Regenerating code
+---
 
-After changing `lib/models/note_item.dart` (e.g. new fields), run:
+## 🏗️ Development Tools
 
+### Regenerating Code
+If you modify the `note_item.dart` model, run:
 ```bash
 dart run build_runner build --delete-conflicting-outputs
 ```
 
-## Changing the app icon
-
-Source icon: `assets/app_icon.png` (1024×1024 recommended). Regenerate all platform icons with:
-
+### Updating App Icons
+Update `assets/app_icon.png` (1024x1024) and run:
 ```bash
 dart run flutter_launcher_icons
 ```
 
-## Privacy
+---
 
-NoteTaking does not collect or send any personal data. All notes are stored only on your device. See [privacy.md](privacy.md).
+## 🛡️ Privacy & Security
 
-## License
+**Wisdom Note Taking App** values your privacy. We do not collect, store, or transmit any personal data. All your notes remain encrypted and local to your device.
 
-This project is licensed under the MIT License – see [LICENSE](LICENSE).
+Check out our [Privacy Policy](privacy.md) for more details.
+
+---
+
+## ⚖️ License
+
+This project is licensed under the **MIT License**. Check the [LICENSE](LICENSE) file for details.
+
+---
+<p align="center">Made with ❤️ using Flutter</p>
