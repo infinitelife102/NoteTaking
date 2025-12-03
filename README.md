@@ -2,6 +2,15 @@
 
 A simple, secure, and intuitive note-taking app built with the power of **Flutter**. Designed for speed, security, and a seamless offline experience. 🚀
 
+## 📌 What Is This Project?
+
+**Wisdom Note Taking App** is an offline-first productivity app for writing, organizing, and protecting your daily notes.
+It is built for people who want a clean and fast note experience with strong local privacy, image support, and cross-platform access across mobile, desktop, and web.
+
+<p align="center">
+  <img src="images/NoteTaking%20%E2%80%94%20Wisdom.png" alt="Wisdom Note Taking project overview" width="80%">
+</p>
+
 <p align="center">
   <img src="images/home.png" alt="Wisdom Note App Home" width="50%">
 </p>
